@@ -20,6 +20,7 @@ from utils.shortcuts import (serializer_invalid_response, error_response,
                              success_response, error_page, paginate, rand_str)
 from utils.captcha import Captcha
 from utils.otp_auth import OtpAuth
+from problem.models import Problem
 
 from .tasks import _send_email
 
@@ -68,7 +69,7 @@ class UserLoginAPIView(APIView):
             return serializer_invalid_response(serializer)
 
 
-#@login_required
+# @login_required
 def logout(request):
     auth.logout(request)
     return http.HttpResponseRedirect("/")
@@ -323,7 +324,7 @@ class ApplyResetPasswordAPIView(APIView):
             except User.DoesNotExist:
                 return error_response(u"用户不存在")
             if user.reset_password_token_create_time and (
-                now() - user.reset_password_token_create_time).total_seconds() < 20 * 60:
+                        now() - user.reset_password_token_create_time).total_seconds() < 20 * 60:
                 return error_response(u"20分钟内只能找回一次密码")
             user.reset_password_token = rand_str()
             user.reset_password_token_create_time = now()
@@ -375,11 +376,19 @@ def user_index_page(request, username):
         return error_page(request, u"用户不存在")
 
     blog_link = ""
-
+    problem_num = Problem.objects.count()
+    problems_status = user.problems_status
+    if "problems" not in problems_status:
+        problems_status["problems"] = {}
+    ac_list = []
+    for i in range(problem_num):
+        if problems_status["problems"].get(str(i+1), -1) == 1:
+            ac_list.append(i)
     if user.userprofile.blog:
         blog_link = user.userprofile.blog.replace("http://", "").replace("https://", "")
 
-    return render(request, "oj/account/user_index.html", {"user": user, "blog_link": blog_link})
+    return render(request, "oj/account/user_index.html", {"user": user, "blog_link": blog_link,
+                                                          "ac_list": ac_list})
 
 
 class SSOAPIView(APIView):
@@ -478,7 +487,8 @@ class TwoFactorAuthAPIView(APIView):
 
 
 def user_rank_page(request, page=1):
-    ranks = UserProfile.objects.filter(submission_number__gt=0).order_by("-accepted_problem_number", "submission_number")
+    ranks = UserProfile.objects.filter(submission_number__gt=0).order_by("-accepted_problem_number",
+                                                                         "submission_number")
     paginator = Paginator(ranks, 20)
     try:
         ranks = paginator.page(int(page))
@@ -496,7 +506,7 @@ def user_rank_page(request, page=1):
     return render(request, "utils/rank.html", {"ranks": ranks, "page": page,
                                                "previous_page": previous_page,
                                                "next_page": next_page,
-                                               "start_id": int(page) * 20 - 20,})
+                                               "start_id": int(page) * 20 - 20, })
 
 
 class AvatarUploadAPIView(APIView):

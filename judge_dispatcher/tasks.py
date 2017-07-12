@@ -132,7 +132,8 @@ class JudgeDispatcher(object):
             problems_status = user.problems_status
             if "problems" not in problems_status:
                 problems_status["problems"] = {}
-
+            if problems_status["problems"].get(str(problem.id), -1) == 1:
+                return
             # 增加用户提交计数器
             # user.userprofile.add_submission_number()
 

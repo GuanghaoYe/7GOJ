@@ -88,16 +88,15 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <!-- {% if latest_question_list %}
+            {% if ac_list %}
                 <ul>
-                    {% for question in latest_question_list %}
-                        <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+                    {% for prob in ac_list %}
+                        <li><a href="/problems/{{ prob }}/">{{prob}}</a></li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>No polls are available.</p>
+                <p>ovo</p>
             {% endif %}
-        -->
         </div>
     </div>
 {% endblock %}
