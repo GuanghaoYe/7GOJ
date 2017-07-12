@@ -71,17 +71,17 @@
                     {{ user.create_time }}
                 </p>
                 <div class="rows">
-                    <div class="col-lg-4 text-center">
+                    {% comment %}<div class="col-lg-4 text-center">
                         <strong id="user-data-number">{{ user.userprofile.rank }}</strong>
                         <span id="user-data-text">Rank</span>
                     </div>
-
+{% endcomment %}
                     <div class="col-lg-6 text-center">
-                        <strong id="user-data-number">{{ user.userprofile.accepted_number }}</strong>
+                        <strong id="user-data-number">{{ user.userprofile.accepted_problem_number }}</strong>
                         <span id="user-data-text">AC</span>
                     </div>
                     <div class="col-lg-6 text-center">
-                        <strong id="user-data-number">{{ user.userprofile.submissions_number }}</strong>
+                        <strong id="user-data-number">{{ user.userprofile.submission_number }}</strong>
                         <span id="user-data-text">Submissions</span>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
             {% if ac_list %}
                 <ul>
                     {% for prob in ac_list %}
-                        <li><a href="/problem/{{ prob }}/">{{prob}}</a></li>
+                        <li><a href="/problems/{{ prob }}/">{{prob}}</a></li>
                     {% endfor %}
                 </ul>
             {% else %}
