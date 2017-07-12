@@ -380,14 +380,17 @@ def user_index_page(request, username):
     if "problems" not in problems_status:
         problems_status["problems"] = {}
     ac_list = []
+    try_list=[]
     for i in range(problem_num):
         if problems_status["problems"].get(str(i+1), -1) == 1:
             ac_list.append(i+1)
+        else:
+            try_list.append(i+1)
     if user.userprofile.blog:
         blog_link = user.userprofile.blog.replace("http://", "").replace("https://", "")
 
     return render(request, "oj/account/user_index.html", {"user": user, "blog_link": blog_link,
-                                                          "ac_list": ac_list})
+                                                          "ac_list": ac_list, "try_list": try_list})
 
 
 class SSOAPIView(APIView):
