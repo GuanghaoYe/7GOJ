@@ -374,7 +374,6 @@ def user_index_page(request, username):
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         return error_page(request, u"用户不存在")
-
     blog_link = ""
     problem_num = Problem.objects.count()
     problems_status = user.problems_status
