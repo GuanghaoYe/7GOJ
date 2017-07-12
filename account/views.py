@@ -383,7 +383,7 @@ def user_index_page(request, username):
     ac_list = []
     for i in range(problem_num):
         if problems_status["problems"].get(str(i+1), -1) == 1:
-            ac_list.append(i)
+            ac_list.append(i+1)
     if user.userprofile.blog:
         blog_link = user.userprofile.blog.replace("http://", "").replace("https://", "")
 
