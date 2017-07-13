@@ -222,8 +222,8 @@ def my_submission(request, submission_id):
         if "test_case" in info[0]:
             info = sorted(info, key=lambda x: x["test_case"])
             for item in info:
-                if item.result == 0:
-                    score = score + 1.0 / info.count()
+                if item['result'] == 0:
+                    score = score + 1.0 / len(info)
     score *= 100
     user = User.objects.get(id=submission.user_id)
     return render(request, "oj/submission/my_submission.html",
