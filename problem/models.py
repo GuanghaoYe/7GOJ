@@ -49,7 +49,6 @@ class AbstractProblem(models.Model):
     total_submit_number = models.IntegerField(default=0)
     # 通过数量
     total_accepted_number = models.IntegerField(default=0)
-
     class Meta:
         db_table = "problem"
         abstract = True

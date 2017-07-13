@@ -214,18 +214,22 @@ def my_submission(request, submission_id):
             problem = Problem.objects.get(id=submission.problem_id, visible=True)
     except Exception:
         return error_page(request, u"提交不存在")
-
+    score = 0
     if submission.result in [judge_result["compile_error"], judge_result["system_error"], judge_result["waiting"]]:
         info = submission.info
     else:
         info = json.loads(submission.info)
         if "test_case" in info[0]:
             info = sorted(info, key=lambda x: x["test_case"])
-
+            for item in info:
+                if item.result == 0:
+                    score = score + 1.0 / info.count()
+    score *= 100
     user = User.objects.get(id=submission.user_id)
     return render(request, "oj/submission/my_submission.html",
                   {"submission": submission, "problem": problem, "info": info,
-                   "user": user, "can_share": result["can_share"], "website_base_url": settings.WEBSITE_INFO["url"]})
+                   "user": user, "can_share": result["can_share"], "website_base_url": settings.WEBSITE_INFO["url"],
+                   "score": score})
 
 
 class SubmissionAdminAPIView(APIView):

@@ -40,6 +40,8 @@
                     {{ submission.result|translate_result }}
                 </span>
                 </h4>
+                <br>
+                <p>Score: {{score}}</p>
                 {% ifnotequal request.user.id submission.user_id %}
                     <p>作者：{{ user.username }}</p>
                 {% endifnotequal %}
@@ -91,7 +93,7 @@
                 {% endifequal %}
             {% endifequal %}
         {% endifequal %}
-  <!--      {% ifequal request.user.id submission.user_id %}
+        {% ifequal request.user.id submission.user_id %}
             <p>本调试信息仅提交者可见</p>
             {% ifequal submission.result 7 %}
                 <pre>System Error: {{ submission.info }}</pre>
@@ -128,7 +130,6 @@
                 {% endifequal %}
             {% endifequal %}
         {% endifequal %}
-        -->
         <div id="code-field">
             <textarea id="code-editor">{{ submission.code }}</textarea>
         </div>
