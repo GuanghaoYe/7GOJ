@@ -221,10 +221,24 @@ def my_submission(request, submission_id):
         info = json.loads(submission.info)
         if "test_case" in info[0]:
             info = sorted(info, key=lambda x: x["test_case"])
-            for item in info:
-                if item['result'] == 0:
-                    score = score + 1.0 / len(info)
+            if not problem.subtask :
+               for item in info:
+                    if item['result'] == 0:
+                        score = score + 1.0 / len(info)
+            else:
+                subtask_info=json.loads(problem.subtask_info)
+                subtask_info=sorted(subtask_info,key=lambda x:x["case"])
+                for item in subtask_info:
+                    bool pass_all=True
+                    for test_case in item['data'].itervalues:
+                        if info[test_case-1]['result'] !=0:
+                            pass_all=False
+                    if pass_all:
+                        score = score + item['score']
+
     score *= 100
+    if problem.subtask:
+        score/=100
     user = User.objects.get(id=submission.user_id)
     return render(request, "oj/submission/my_submission.html",
                   {"submission": submission, "problem": problem, "info": info,
