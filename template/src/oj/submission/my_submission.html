@@ -41,7 +41,7 @@
                 </span>
                 </h4>
                 <br>
-                <p>Score: {{score}}</p>
+                <p>Score: {{ score }}</p>
                 {% ifnotequal request.user.id submission.user_id %}
                     <p>作者：{{ user.username }}</p>
                 {% endifnotequal %}
@@ -68,26 +68,29 @@
                         <pre>Waiting</pre>
                     {% else %}
                         <table class="table">
-                          <thead>
+                            <thead>
                             <tr>
                                 <th>测试用例</th>
-                                <th><a href="https://github.com/QingdaoU/OnlineJudge/wiki/%E5%AE%9E%E9%99%85%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E5%92%8CCPU%E6%97%B6%E9%97%B4">实际运行时间</a></th>
+                                <th>
+                                    <a href="https://github.com/QingdaoU/OnlineJudge/wiki/%E5%AE%9E%E9%99%85%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E5%92%8CCPU%E6%97%B6%E9%97%B4">实际运行时间</a>
+                                </th>
                                 <th>CPU时间</th>
                                 <th>内存</th>
                                 <th>结果</th>
                             </tr>
-                          </thead>
-                          <tbody>
-                          {% for item in info %}
-                            <tr>
-                              <th scope="row">{{ item.test_case }}</th>
-                                <td>{{ item.real_time }} ms</td>
-                                <td>{{ item.cpu_time }} ms</td>
-                                <td>{{ item.memory }} Byte</td>
-                                <td class="{{ item.result|translate_result_class }}">{{ item.result|translate_result }} {% if item.signal %}({{ item.signal|translate_signal }}){% endif %}</td>
-                            </tr>
-                          {% endfor %}
-                          </tbody>
+                            </thead>
+                            <tbody>
+                            {% for item in info %}
+                                <tr>
+                                    <th scope="row">{{ item.test_case }}</th>
+                                    <td>{{ item.real_time }} ms</td>
+                                    <td>{{ item.cpu_time }} ms</td>
+                                    <td>{{ item.memory }} Byte</td>
+                                    <td class="{{ item.result|translate_result_class }}">{{ item.result|translate_result }}
+                                        {% if item.signal %}({{ item.signal|translate_signal }}){% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                         </table>
                     {% endifequal %}
                 {% endifequal %}
@@ -105,30 +108,54 @@
                         <pre>Waiting</pre>
                     {% else %}
                         <table class="table">
-                          <thead>
+                            <thead>
                             <tr>
                                 <th>测试用例</th>
-                                <th><a href="https://github.com/QingdaoU/OnlineJudge/wiki/%E5%AE%9E%E9%99%85%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E5%92%8CCPU%E6%97%B6%E9%97%B4">实际运行时间</a></th>
+                                <th>
+                                    <a href="https://github.com/QingdaoU/OnlineJudge/wiki/%E5%AE%9E%E9%99%85%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E5%92%8CCPU%E6%97%B6%E9%97%B4">实际运行时间</a>
+                                </th>
                                 <th>CPU时间</th>
                                 <th>内存</th>
                                 <th>结果</th>
                             </tr>
-                          </thead>
-                          <tbody>
-                          {% for item in info %}
-                            <tr>
-                              <th scope="row">{{ item.test_case }}</th>
-                                <td>{{ item.real_time }} ms</td>
-                                <td>{{ item.cpu_time }} ms</td>
-                                <td>{{ item.memory }} Byte</td>
-                                <td class="{{ item.result|translate_result_class }}">{{ item.result|translate_result }} {% if item.signal %}({{ item.signal|translate_signal }}){% endif %}</td>
-                            </tr>
-                          {% endfor %}
-                          </tbody>
+                            </thead>
+                            <tbody>
+                            {% for item in info %}
+                                <tr>
+                                    <th scope="row">{{ item.test_case }}</th>
+                                    <td>{{ item.real_time }} ms</td>
+                                    <td>{{ item.cpu_time }} ms</td>
+                                    <td>{{ item.memory }} Byte</td>
+                                    <td class="{{ item.result|translate_result_class }}">{{ item.result|translate_result }}
+                                        {% if item.signal %}({{ item.signal|translate_signal }}){% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                         </table>
                     {% endifequal %}
                 {% endifequal %}
             {% endifequal %}
+        {% endifequal %}
+        {% ifequal problem.subtask 1 %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Subtask用例</th>
+                    <th>结果</th>
+                    <th>Score</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in subtask_info %}
+                    <tr>
+                        <th scope="row">{{ item.case }}</th>
+                        <td class="{{ item.result|translate_result_class }}">{{ item.result|translate_result }}
+                            {% if item.signal %}({{ item.signal|translate_signal }}){% endif %}</td>
+                        <td>{{ item.score }} </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         {% endifequal %}
         <div id="code-field">
             <textarea id="code-editor">{{ submission.code }}</textarea>

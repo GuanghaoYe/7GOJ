@@ -215,6 +215,7 @@ def my_submission(request, submission_id):
     except Exception:
         return error_page(request, u"提交不存在")
     score = 0
+    subtask_info = []
     if submission.result in [judge_result["compile_error"], judge_result["system_error"], judge_result["waiting"]]:
         info = submission.info
     else:
@@ -229,8 +230,8 @@ def my_submission(request, submission_id):
                 subtask_info=json.loads(problem.subtask_info)
                 subtask_info=sorted(subtask_info,key=lambda x:x["case"])
                 for item in subtask_info:
-                    bool pass_all=True
-                    for test_case in item['data'].itervalues:
+                    pass_all=True
+                    for test_case in item['data'].itervalues():
                         if info[test_case-1]['result'] !=0:
                             pass_all=False
                     if pass_all:
@@ -243,7 +244,7 @@ def my_submission(request, submission_id):
     return render(request, "oj/submission/my_submission.html",
                   {"submission": submission, "problem": problem, "info": info,
                    "user": user, "can_share": result["can_share"], "website_base_url": settings.WEBSITE_INFO["url"],
-                   "score": score})
+                   "score": score,"subtask_info":subtask_info})
 
 
 class SubmissionAdminAPIView(APIView):
