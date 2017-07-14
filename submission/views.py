@@ -231,11 +231,16 @@ def my_submission(request, submission_id):
                 subtask_info=sorted(subtask_info,key=lambda x:x["case"])
                 for item in subtask_info:
                     pass_all=True
+                    tmp_result=0
                     for test_case in item['data'].itervalues():
                         if info[test_case-1]['result'] !=0:
                             pass_all=False
+                            tmp_result=max(tmp_result,info[test_case-1]['result'])
                     if pass_all:
                         score = score + item['score']
+                        item['result']=0
+                    else:
+                        item['result']=tmp_result
 
     score *= 100
     if problem.subtask:
