@@ -173,7 +173,7 @@ class JudgeDispatcher(object):
 
             # 增加用户提交计数器
             user.userprofile.add_submission_number()
-            
+
             if problems_status["contest_problems"].get(str(contest_problem.id), -1) == 1:
                 return
             # 之前状态不是ac, 现在是ac了 需要更新用户ac题目数量计数器,这里需要判重
