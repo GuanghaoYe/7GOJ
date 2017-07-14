@@ -132,19 +132,17 @@ class JudgeDispatcher(object):
             problems_status = user.problems_status
             if "problems" not in problems_status:
                 problems_status["problems"] = {}
+            # 增加用户提交计数器
+            user.userprofile.add_submission_number()
+            # 如果已经AC过这道题了， 那么就直接返回，不再对状态进行改变
+            # 这样一道题如果AC过那么就永久AC了，状态不会再改变
             if problems_status["problems"].get(str(problem.id), -1) == 1:
                 return
-            # 增加用户提交计数器
-            # user.userprofile.add_submission_number()
 
-            # 之前状态不是ac, 现在是ac了 需要更新用户ac题目数量计数器,这里需要判重
+            # 之前状态不是ac, 现在是ac了 需要更新用户ac题目数量计数器
             if problems_status["problems"].get(str(problem.id), -1) != 1 and self.submission.result == result[
                 "accepted"]:
                 user.userprofile.add_accepted_problem_number()
-
-            # # 之前状态是ac, 现在不是ac了 需要用户ac题目数量计数器-1, 否则上一个逻辑胡重复增加ac计数器
-            # if problems_status["problems"].get(str(problem.id), -1) == 1 and self.submission.result != result["accepted"]:
-            #     user.userprofile.minus_accepted_problem_number()
 
             if self.submission.result == result["accepted"]:
                 problem.add_ac_number()
@@ -175,7 +173,9 @@ class JudgeDispatcher(object):
 
             # 增加用户提交计数器
             user.userprofile.add_submission_number()
-
+            
+            if problems_status["contest_problems"].get(str(contest_problem.id), -1) == 1:
+                return
             # 之前状态不是ac, 现在是ac了 需要更新用户ac题目数量计数器,这里需要判重
             if problems_status["contest_problems"].get(str(contest_problem.id), -1) != 1 and \
                             self.submission.result == result["accepted"]:
