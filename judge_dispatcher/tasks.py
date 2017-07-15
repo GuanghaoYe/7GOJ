@@ -93,15 +93,39 @@ class JudgeDispatcher(object):
             self.submission.info = str(e) + " help: https://github.com/QingdaoU/OnlineJudge/wiki/FAQ"
         finally:
             self.release_judge_instance(judge_server.id)
-
             self.submission.judge_end_time = int(time.time() * 1000)
+            score=0
+            if self.submission.result in [result["compile_error"], result["system_error"], result["waiting"]]:
+                score=0
+            else:
+                info=json.loads(self.submission.info)
+                if "test_case" in info[0]:
+                    problem=Problem.objects.get(id=self.submission.problem_id)
+                    info = sorted(info, key=lambda x: x["test_case"])
+                    if not problem.subtask:
+                        for item in info:
+                            if item['result'] == 0:
+                                score = score + 100.0 / len(info)
+                    else:
+                        subtask_info = json.loads(problem.subtask_info)
+                        subtask_info = sorted(subtask_info, key=lambda x: x["case"])
+                        for item in subtask_info:
+                            pass_all = True
+                            for test_case in item['data'].itervalues():
+                                if info[test_case - 1]['result'] != 0:
+                                    pass_all = False
+                            if pass_all:
+                                score = score + item['score']
+            self.submission.score = score
             self.submission.save(
-                update_fields=["judge_start_time", "result", "info", "accepted_answer_time", "judge_end_time"])
+                update_fields=["judge_start_time", "result", "score", "info", "accepted_answer_time", "judge_end_time"])
 
         if self.submission.contest_id:
             self.update_contest_problem_status()
         else:
             self.update_problem_status()
+
+
 
         with transaction.atomic():
             waiting_submissions = JudgeWaitingQueue.objects.select_for_update().all()
@@ -119,6 +143,7 @@ class JudgeDispatcher(object):
                              spj_language=waiting_submission.spj_language,
                              spj_code=waiting_submission.spj_code,
                              spj_version=waiting_submission.spj_version)
+
 
     def update_problem_status(self):
         with transaction.atomic():

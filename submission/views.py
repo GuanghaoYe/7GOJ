@@ -222,7 +222,7 @@ def my_submission(request, submission_id):
         info = json.loads(submission.info)
         if "test_case" in info[0]:
             info = sorted(info, key=lambda x: x["test_case"])
-            if not problem.subtask :
+            if not problem.subtask:
                for item in info:
                     if item['result'] == 0:
                         score = score + 1.0 / len(info)

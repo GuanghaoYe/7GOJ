@@ -42,6 +42,7 @@
                 </h4>
                 <br>
                 <p>Score: {{ score }}</p>
+                <p>Score Test:{{submission.score}} </p>
                 {% ifnotequal request.user.id submission.user_id %}
                     <p>作者：{{ user.username }}</p>
                 {% endifnotequal %}
