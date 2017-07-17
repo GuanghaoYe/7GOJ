@@ -405,9 +405,13 @@ def contest_problems_list_page(request, contest_id):
     比赛所有题目的列表页
     """
     contest = Contest.objects.get(id=contest_id)
+    contest_system=contest.contest_system
+    if contest.status != CONTEST_UNDERWAY:
+        contest_system = 0
     contest_problems = ContestProblem.objects.filter(contest=contest, visible=True).select_related("contest").order_by("sort_index")
     return render(request, "oj/contest/contest_problems_list.html", {"contest_problems": contest_problems,
-                                                                     "contest": {"id": contest_id}})
+                                                                     "contest": {"id": contest_id,
+                                                                                 "system":contest_system}})
 
 
 def contest_list_page(request, page=1):
@@ -529,7 +533,7 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
     我比赛单个题目的所有提交列表
     """
     try:
-        Contest.objects.get(id=contest_id)
+        contest=Contest.objects.get(id=contest_id)
     except Contest.DoesNotExist:
         return error_page(request, u"比赛不存在")
     try:
@@ -539,6 +543,9 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
     submissions = Submission.objects.filter(user_id=request.user.id, problem_id=contest_problem.id, contest_id=contest_id). \
         order_by("-create_time"). \
         values("id", "result", "create_time", "accepted_answer_time", "language")
+    if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            item['result'] = 9
     return render(request, "oj/submission/problem_my_submissions_list.html",
                   {"submissions": submissions, "problem": contest_problem})
 
@@ -560,7 +567,9 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
     # 如果比赛已经开始，就不再显示之前测试题目的提交
     if contest.status != CONTEST_NOT_START:
         submissions = submissions.filter(create_time__gte=contest.start_time)
-
+    if contest.contest_system==1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            item["result"]=9
     user_id = request.GET.get("user_id", None)
     if user_id:
         submissions = submissions.filter(user_id=request.GET.get("user_id"))

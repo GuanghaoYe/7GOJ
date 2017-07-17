@@ -13,7 +13,8 @@ def translate_result(value):
         5: "Format Error",
         6: "Wrong Answer",
         7: "System Error",
-        8: "Waiting"
+        8: "Waiting",
+        9: "Contest is going"
     }
     return results[value]
 
