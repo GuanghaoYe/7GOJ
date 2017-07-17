@@ -25,7 +25,7 @@ class Submission(models.Model):
     accepted_answer_info = models.TextField(blank=True, null=True)
     # 是否可以分享
     shared = models.BooleanField(default=False)
-
+    score = models.IntegerField(default=-1)
     class Meta:
         db_table = "submission"
 

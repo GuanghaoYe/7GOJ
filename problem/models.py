@@ -43,13 +43,15 @@ class AbstractProblem(models.Model):
     spj_language = models.IntegerField(blank=True, null=True)
     spj_code = models.TextField(blank=True, null=True)
     spj_version = models.CharField(max_length=32, blank=True, null=True)
+    # subtask
+    subtask = models.BooleanField(default=False)
+    subtask_info = models.TextField(blank=True, null=True)
     # 是否可见 false的话相当于删除
     visible = models.BooleanField(default=True)
     # 总共提交数量
     total_submit_number = models.IntegerField(default=0)
     # 通过数量
     total_accepted_number = models.IntegerField(default=0)
-
     class Meta:
         db_table = "problem"
         abstract = True

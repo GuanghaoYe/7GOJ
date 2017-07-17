@@ -89,13 +89,16 @@
         </div>
         <div class="col-lg-8">
             {% if ac_list %}
-                <ul>
+                    <strong>Accepted </strong> <br>
                     {% for prob in ac_list %}
-                        <li><a href="/problems/{{ prob }}/">{{prob}}</a></li>
+                        <span class="label label-info"><a href="/problem/{{ prob }}/">{{prob}}</a></span>
                     {% endfor %}
-                </ul>
-            {% else %}
-                <p>ovo</p>
+            {% endif %}
+            {% if try_list %}
+                <strong>Attempted </strong> <br>
+                {% for prob in try_list %}
+                        <a href="/problem/{{ prob }}/">{{prob}}</a>
+                    {% endfor %}
             {% endif %}
         </div>
     </div>

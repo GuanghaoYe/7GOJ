@@ -49,7 +49,10 @@ class Contest(models.Model):
     groups = models.ManyToManyField(Group)
     # 是否可见 false的话相当于删除
     visible = models.BooleanField(default=True)
-
+    # Contest Type
+    # 0 ACM
+    # 1 OI
+    # 2 IOI
     @property
     def status(self):
         if self.start_time > now():
