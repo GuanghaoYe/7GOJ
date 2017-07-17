@@ -628,8 +628,11 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
             item["show_link"] = True
         else:
             item["show_link"] = False
-        if contest.status==CONTEST_UNDERWAY and contest.contest_system==1:
-            item["show_link"] = False
+        if contest.contest_system==1 and contest.status==CONTEST_UNDERWAY:
+            if request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by:
+                item["show_link"] = True
+            else:
+                item["show_link"] = False
     return render(request, "oj/contest/submissions_list.html",
                   {"submissions": submissions, "page": int(page),
                    "previous_page": previous_page, "next_page": next_page, "start_id": int(page) * 20 - 20,

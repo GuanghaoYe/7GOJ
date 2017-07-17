@@ -40,7 +40,7 @@
                         {% ifequal request.user.admin_type 2 %}
                         <a href="/submission/{{ item.id }}/">{{ forloop.counter }}</a>
                         {% else %}
-                        <a>{{ forloop.counter }}</a>
+                        {{ forloop.counter }}
                         {% endifequal %}
                     </th>
                     <td>{{ item.create_time }}</td>
