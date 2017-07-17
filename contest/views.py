@@ -467,7 +467,7 @@ def _get_rank(contest_id):
         rank = ContestRank.objects.filter(contest_id=contest_id). \
             select_related("user"). \
             order_by("-total_score"). \
-            values("id", "user__id", "user__username", "user__real_name", "user__userprofile__student_id",
+            values("id", "user__id", "total_score", "user__username", "user__real_name", "user__userprofile__student_id",
                    "contest_id", "submission_info", "total_submission_number", "total_ac_number", "total_time")
     rank_number = 1
     for item in rank:
