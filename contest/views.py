@@ -362,7 +362,9 @@ def contest_problem_page(request, contest_id, contest_problem_id):
         problem = ContestProblem.objects.get(id=contest_problem_id, visible=True)
     except ContestProblem.DoesNotExist:
         return error_page(request, u"比赛题目不存在")
-    warning = u"您已经提交过本题的正确答案，重复提交可能造成时间累计。"
+    warning= u"ovo"
+    if contest.contest_system==0:
+        warning = u"您已经提交过本题的正确答案，重复提交可能造成时间累计。"
     show_warning = False
 
     try:
@@ -450,9 +452,17 @@ def contest_list_page(request, page=1):
 
 
 def _get_rank(contest_id):
-    rank = ContestRank.objects.filter(contest_id=contest_id). \
+    contest = Contest.objects.get(id=contest_id)
+    if contest.contest_system==0:
+        rank = ContestRank.objects.filter(contest_id=contest_id). \
             select_related("user"). \
             order_by("-total_ac_number", "total_time"). \
+            values("id", "user__id", "user__username", "user__real_name", "user__userprofile__student_id",
+                   "contest_id", "submission_info", "total_submission_number", "total_ac_number", "total_time")
+    elif contest.contest_system==1:
+        rank = ContestRank.objects.filter(contest_id=contest_id). \
+            select_related("user"). \
+            order_by("-total_score"). \
             values("id", "user__id", "user__username", "user__real_name", "user__userprofile__student_id",
                    "contest_id", "submission_info", "total_submission_number", "total_ac_number", "total_time")
     rank_number = 1
