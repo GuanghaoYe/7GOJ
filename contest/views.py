@@ -545,7 +545,9 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
         values("id", "result", "create_time", "accepted_answer_time", "language")
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            item['result'] = 9
+            if item["result"] !=4:
+                item['result'] = 9
+            item["accepted_answer_time"]=0
     return render(request, "oj/submission/problem_my_submissions_list.html",
                   {"submissions": submissions, "problem": contest_problem})
 
@@ -569,7 +571,9 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
         submissions = submissions.filter(create_time__gte=contest.start_time)
     if contest.contest_system==1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            item["result"]=9
+            if item["result"]!=4:
+                item["result"]=9
+            item["accepted_answer_time"]=0
     user_id = request.GET.get("user_id", None)
     if user_id:
         submissions = submissions.filter(user_id=request.GET.get("user_id"))
@@ -624,7 +628,8 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
             item["show_link"] = True
         else:
             item["show_link"] = False
-
+        if contest.status==CONTEST_UNDERWAY and contest.contest_system==1:
+            item["show_link"] = False
     return render(request, "oj/contest/submissions_list.html",
                   {"submissions": submissions, "page": int(page),
                    "previous_page": previous_page, "next_page": next_page, "start_id": int(page) * 20 - 20,
