@@ -579,7 +579,7 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
         values("id", "result", "create_time", "accepted_answer_time", "language")
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            if item["result"] != 4:
+            if item["result"] != 4 and item["result"]!=7:
                 item['result'] = 9
             item["accepted_answer_time"] = 0
     return render(request, "oj/submission/problem_my_submissions_list.html",
@@ -601,7 +601,7 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
                "accepted_answer_time", "language", "user_id").order_by("-create_time")
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            if item["result"] != 4:
+            if item["result"] != 4 and item['result'] !=7:
                 item["result"] = 9
             item["accepted_answer_time"] = 0
     # 如果比赛已经开始，就不再显示之前测试题目的提交
