@@ -477,6 +477,30 @@ def _get_rank(contest_id):
             rank_number += 1
     return rank
 
+def _probability(x,y):
+    return 1.0/(1+10**((y-x)/400))
+
+def _get_seed(rank,user__id):
+    ret=0.0
+    user=User.objects.get(id=user__id)
+    for item in rank:
+        if item["user__id"] == user__id:
+            continue
+        else:
+            ret=ret+_probability(user.userprofile.rating,rank["user__userprofile__rating"])
+    return ret
+
+
+def update_rating(contest_id):
+    contest = Contest.objects.get(id=contest_id)
+    rank=ContestRank.objects.filter(contest_id=contest_id).  \
+        select_related("user").  \
+        order_by("-total_score").  \
+        values("id", "user__id", "user__userprofile__rating", "user__userprofile__rating_info","user__userprofile__id")
+    seed=[]
+    for item in rank:
+        seed.append()
+
 
 @check_user_contest_permission
 def contest_rank_page(request, contest_id):
@@ -565,15 +589,14 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
     submissions = Submission.objects.filter(contest_id=contest_id). \
         values("id", "contest_id", "problem_id", "result", "create_time",
                "accepted_answer_time", "language", "user_id").order_by("-create_time")
-
-    # 如果比赛已经开始，就不再显示之前测试题目的提交
-    if contest.status != CONTEST_NOT_START:
-        submissions = submissions.filter(create_time__gte=contest.start_time)
     if contest.contest_system==1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
             if item["result"]!=4:
                 item["result"]=9
             item["accepted_answer_time"]=0
+    # 如果比赛已经开始，就不再显示之前测试题目的提交
+    if contest.status != CONTEST_NOT_START:
+        submissions = submissions.filter(create_time__gte=contest.start_time)
     user_id = request.GET.get("user_id", None)
     if user_id:
         submissions = submissions.filter(user_id=request.GET.get("user_id"))
