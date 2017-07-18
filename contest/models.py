@@ -144,7 +144,6 @@ class ContestRank(models.Model):
                 info["ac_time"] = (submission.create_time - self.contest.start_time).total_seconds()
                 info["score"] = 100
                 self.total_time += info["ac_time"]
-                self.total_score += 100
                 problem = ContestProblem.objects.get(id=submission.problem_id)
 
                 if problem.total_accepted_number == 1:
@@ -156,4 +155,7 @@ class ContestRank(models.Model):
                 info["score"] = submission.score
         self.total_score += info["score"]
         self.submission_info[str(submission.problem_id)] = info
+        self.total_score=0
+        for item in self.submission_info.itervaules():
+            self.total_score+=item['score']
         self.save()

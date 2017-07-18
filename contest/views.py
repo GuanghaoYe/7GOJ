@@ -393,6 +393,8 @@ def contest_problem_page(request, contest_id, contest_problem_id):
         contest_set = Contest.objects.filter(groups__in=request.user.managed_groups.all())
         if contest in contest_set:
             show_submit_code_area = True
+    if contest.contest_system==1:
+        show_warning=0
     return render(request, "oj/problem/contest_problem.html", {"problem": problem,
                                                                "contest": contest,
                                                                "samples": json.loads(problem.samples),
@@ -666,9 +668,14 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
                 item["show_link"] = False
         if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
             if item["result"] != 4:
-               item["result"] = 9
+                item["result"] = 9
             item["accepted_answer_time"] = 0
-            
+
+    if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            if item["result"] != 4:
+                item["result"] = 9
+            item["accepted_answer_time"] = 0
     return render(request, "oj/contest/submissions_list.html",
                   {"submissions": submissions, "page": int(page),
                    "previous_page": previous_page, "next_page": next_page, "start_id": int(page) * 20 - 20,
