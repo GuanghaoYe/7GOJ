@@ -12,7 +12,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert", "csrfToken", "date
                     real_time_rank: vm.realTimeRank,
                     start_time: vm.startTime,
                     end_time: vm.endTime,
-                    visible: false
+                    visible: false,
+                    contest_system:vm.contestSystem
                 };
 
                 var selectedGroups = [];
@@ -52,6 +53,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert", "csrfToken", "date
                     method: "post",
                     success: function (data) {
                         if (!data.code) {
+                            // bsAlert(data.contestSystem);
+                            // bsAlert(data.contest_system);
                             bsAlert("添加成功！接下来下需要为比赛添加问题(注意比赛当前状态为:隐藏)");
                             location.hash = "#contest/contest_list";
                         }
@@ -75,6 +78,7 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert", "csrfToken", "date
             vm.allGroups = [];
             vm.showGlobalViewRadio = true;
             vm.realTimeRank = true;
+            vm.contestSystem=0;
             avalon.vmodels.contestDescriptionEditor.content = "";
 
         }
@@ -89,7 +93,7 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert", "csrfToken", "date
                 allGroups: [],
                 showGlobalViewRadio: true,
                 realTimeRank: true,
-
+                contestSystem: 0,
                 contestDescriptionEditor: {
                     editorId: "contest-description-editor",
                     placeholder: "比赛介绍内容"

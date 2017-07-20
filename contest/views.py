@@ -70,12 +70,14 @@ class ContestAdminAPIView(APIView):
                                                  real_time_rank=data["real_time_rank"], password=data["password"],
                                                  start_time=dateparse.parse_datetime(data["start_time"]),
                                                  end_time=dateparse.parse_datetime(data["end_time"]),
-                                                 created_by=request.user, visible=data["visible"])
+                                                 created_by=request.user, visible=data["visible"],
+                                                 contest_system=data["contest_system"])
             except IntegrityError:
                 return error_response(u"比赛名已经存在")
             contest.groups.add(*groups)
             return success_response(ContestSerializer(contest).data)
         else:
+            ## return error_response(u"naive!")
             return serializer_invalid_response(serializer)
 
     def put(self, request):
