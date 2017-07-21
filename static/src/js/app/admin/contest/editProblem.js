@@ -52,7 +52,9 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                             input_description: vm.inputDescription,
                             output_description: vm.outputDescription,
                             sort_index: vm.sortIndex,
-                            spj: spjVM.spj
+                            spj: spjVM.spj,
+                            subtask: vm.subtask,
+                            subtask_info: vm.subtaskInfo
                         };
                         if (spjVM.spj) {
                             ajaxData.spj_language = spjVM.spjLanguage;
@@ -113,6 +115,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                     outputDescription: "",
                     testCaseId: "",
                     testCaseList: [],
+                    subtask: false,
+                    subtaskInfo: "",
 
                     contestProblemDescriptionEditor: {
                         editorId: "contest-problem-description-editor",
@@ -161,6 +165,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                 vm.outputDescription = "";
                 vm.testCaseId = "";
                 vm.testCaseList = [];
+                vm.subtask = false;
+                vm.subtaskInfo = "";
             }
 
             if (avalon.vmodels.admin.contestProblemStatus == "edit") {
@@ -185,6 +191,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                             vm.inputDescription = problem.input_description;
                             vm.outputDescription = problem.output_description;
                             vm.score = problem.score;
+                            vm.subtask = problem.subtask;
+                            vm.subtaskInfo = problem.subtask_info;
                             avalon.vmodels.testCaseUploader.setTestCase(problem.test_case_id);
                             vm.samples = [];
                             for (var i = 0; i < problem.samples.length; i++) {

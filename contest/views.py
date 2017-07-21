@@ -217,7 +217,10 @@ class ContestProblemAdminAPIView(APIView):
                                                             created_by=request.user,
                                                             hint=data["hint"],
                                                             contest=contest,
-                                                            sort_index=data["sort_index"])
+                                                            sort_index=data["sort_index"],
+                                                            subtask=data["subtask"],
+                                                            subtask_info=data["subtask_info"]
+                                                            )
             return success_response(ContestProblemSerializer(contest_problem).data)
         else:
             return serializer_invalid_response(serializer)
@@ -257,6 +260,8 @@ class ContestProblemAdminAPIView(APIView):
             contest_problem.visible = data["visible"]
             contest_problem.sort_index = data["sort_index"]
             contest_problem.last_update_time = now()
+            contest_problem.subtask = data["subtask"]
+            contest_problem.subtask_info = data["subtask_info"]
             contest_problem.save()
             return success_response(ContestProblemSerializer(contest_problem).data)
         else:
