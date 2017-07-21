@@ -104,7 +104,9 @@ class ProblemAdminAPIView(APIView):
                                              difficulty=data["difficulty"],
                                              created_by=request.user,
                                              hint=data["hint"],
-                                             visible=data["visible"])
+                                             visible=data["visible"],
+                                             subtask=data["subtask"],
+                                             subtask_info=data["subtask_info"])
             for tag in data["tags"]:
                 try:
                     tag = ProblemTag.objects.get(name=tag)
@@ -145,7 +147,8 @@ class ProblemAdminAPIView(APIView):
             problem.hint = data["hint"]
             problem.visible = data["visible"]
             problem.last_update_time = now()
-
+            problem.subtask = data["subtask"]
+            problem.subtask_info = data["subtask_info"]
             # 删除原有的标签的对应关系
             problem.tags.remove(*problem.tags.all())
             # 重新添加所有的标签

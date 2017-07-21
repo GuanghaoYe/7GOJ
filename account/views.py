@@ -487,7 +487,7 @@ class TwoFactorAuthAPIView(APIView):
         else:
             return serializer_invalid_response(serializer)
 
-
+@super_admin_required
 def user_rank_page(request, page=1):
     ranks = UserProfile.objects.filter(submission_number__gt=0).order_by("-accepted_problem_number",
                                                                          "submission_number")

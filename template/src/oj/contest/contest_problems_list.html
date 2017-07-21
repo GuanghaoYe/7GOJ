@@ -44,7 +44,9 @@
                         {% for item in contest_problems %}
                             <tr>
                                 <th>
+                                    {% ifequal contest.system 0 %}
                                     <span class="{% get_problem_status request.user.problems_status.contest_problems item.id %}"></span>
+                                    {% endifequal %}
                                 </th>
                                 <th scope="row">
                                     <a href="/contest/{{ item.contest.id }}/problem/{{ item.id }}/">{{ item.sort_index }}</a>
@@ -52,7 +54,11 @@
                                 <td>
                                     <a href="/contest/{{ item.contest.id }}/problem/{{ item.id }}/">{{ item.title }}</a>
                                 </td>
+                                {% ifequal contest.system 0 %}
                                 <td>{{ item|accepted_radio }}</td>
+                                {% else %}
+                                <td>{{ 0 }}</td>
+                                {% endifequal %}
                             </tr>
                         {% endfor %}
                         </tbody>

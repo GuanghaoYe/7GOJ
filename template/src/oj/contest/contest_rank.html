@@ -35,6 +35,7 @@
                         <tr>
                             <th>#</th>
                             <th class="text-center">用户名</th>
+                            <th class="text-center">Score</th>
                             <th class="text-center">AC / 总提交</th>
                             <th class="text-center">用时 + 罚时</th>
                             {% for item in contest_problems %}
@@ -56,6 +57,7 @@
                                         （{{ item.user__real_name }}）
                                     {% endif %}
                                 </td>
+                                <td>{{ item.total_score }}</td>
                                 <td>{{ item.total_ac_number }} / {{ item.total_submission_number }}</td>
                                 <td>{% if item.total_time %}{{ item.total_time|format_seconds }}{% else %}--{% endif %}</td>
                                 {% autoescape off %}

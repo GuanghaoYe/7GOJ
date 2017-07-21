@@ -46,9 +46,12 @@ class Contest(models.Model):
     last_updated_time = models.DateTimeField(auto_now=True)
     # 这个比赛是谁创建的
     created_by = models.ForeignKey(User)
+
     groups = models.ManyToManyField(Group)
     # 是否可见 false的话相当于删除
     visible = models.BooleanField(default=True)
+
+    contest_system = models.IntegerField(default=0)
     # Contest Type
     # 0 ACM
     # 1 OI
@@ -91,7 +94,7 @@ class ContestRank(models.Model):
     # 数据结构{23: {"is_ac": True, "ac_time": 8999, "error_number": 2, "is_first_ac": True}}
     # key 是比赛题目的id
     submission_info = JSONField(default={})
-
+    total_score = models.IntegerField(default=0)
     class Meta:
         db_table = "contest_rank"
 
@@ -107,9 +110,10 @@ class ContestRank(models.Model):
         if str(submission.problem_id) in self.submission_info:
             info = self.submission_info[str(submission.problem_id)]
             # 如果这道题目已经 ac 了就跳过
-            if info["is_ac"]:
-                return
-
+            self.total_score -= info["score"]
+            if self.contest.contest_system == 0:
+                if info["is_ac"]:
+                    return
             self.total_submission_number += 1
 
             if submission.result == result["accepted"]:
@@ -118,7 +122,7 @@ class ContestRank(models.Model):
 
                 info["is_ac"] = True
                 info["ac_time"] = (submission.create_time - self.contest.start_time).total_seconds()
-
+                info["score"] = 100
                 # 之前已经提交过，但是是错误的，这次提交是正确的。错误的题目不计入罚时
                 self.total_time += (info["ac_time"] + info["error_number"] * 20 * 60)
                 problem = ContestProblem.objects.get(id=submission.problem_id)
@@ -133,11 +137,12 @@ class ContestRank(models.Model):
         else:
             # 第一次提交这道题目
             self.total_submission_number += 1
-            info = {"is_ac": False, "ac_time": 0, "error_number": 0, "is_first_ac": False}
+            info = {"is_ac": False, "ac_time": 0, "error_number": 0, "is_first_ac": False,"score":0}
             if submission.result == result["accepted"]:
                 self.total_ac_number += 1
                 info["is_ac"] = True
                 info["ac_time"] = (submission.create_time - self.contest.start_time).total_seconds()
+                info["score"] = 100
                 self.total_time += info["ac_time"]
                 problem = ContestProblem.objects.get(id=submission.problem_id)
 
@@ -147,5 +152,10 @@ class ContestRank(models.Model):
             else:
                 info["is_ac"] = False
                 info["error_number"] = 1
+                info["score"] = submission.score
+        self.total_score += info["score"]
         self.submission_info[str(submission.problem_id)] = info
+        self.total_score=0
+        for item in self.submission_info.itervaules():
+            self.total_score+=item['score']
         self.save()

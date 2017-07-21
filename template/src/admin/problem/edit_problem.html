@@ -37,7 +37,7 @@
         <div class="col-md-3">
             <div class="form-group"><label>难度</label>
                 <select name="difficulty" class="form-control" ms-duplex="difficulty"
-                       data-error="请选择难度" required>
+                        data-error="请选择难度" required>
                     <option value="1">简单</option>
                     <option value="2">中等</option>
                     <option value="3">难</option>
@@ -115,7 +115,16 @@
             <label>来源</label>
             <input type="text" name="source" class="form-control" ms-duplex="source">
         </div>
-
+        <div class="col-md-3 form-group">
+            <label>subtask</label><br>
+            <label><input type="checkbox" ms-duplex-checked="subtask">
+            </label>
+        </div>
+        <div class="form-group col-md-12">
+            <label>subtask配置</label>
+            <small><a href="https://github.com/yeguanghao/7GOJ/wiki/subtask-%E9%85%8D%E7%BD%AE"> subtask配置方法</a> </small>
+            <input type="text" name="subtask_info" class="form-control" ms-duplex="subtaskInfo">
+        </div>
         <div class="col-md-12">
             <input type="submit" class="btn btn-success btn-lg" value="发布题目" id="submitBtn">
         </div>

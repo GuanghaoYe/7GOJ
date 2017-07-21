@@ -18,6 +18,7 @@ class CreateContestSerializer(serializers.Serializer):
     end_time = serializers.DateTimeField()
     groups = serializers.ListField(child=serializers.IntegerField(), required=False, default=[])
     visible = serializers.BooleanField()
+    contest_system = serializers.IntegerField()
 
 
 class DateTimeLocal(serializers.DateTimeField):
@@ -50,6 +51,7 @@ class EditContestSerializer(serializers.Serializer):
     end_time = serializers.DateTimeField()
     groups = serializers.ListField(child=serializers.IntegerField(), required=False, default=[])
     visible = serializers.BooleanField()
+    contest_system = serializers.IntegerField()
 
 
 class ContestProblemSampleSerializer(serializers.ListField):
@@ -79,6 +81,8 @@ class CreateContestProblemSerializer(serializers.Serializer):
     hint = serializers.CharField(max_length=3000, allow_blank=True)
     score = serializers.IntegerField(required=False, default=0)
     sort_index = serializers.CharField(max_length=30)
+    subtask = serializers.BooleanField()
+    subtask_info = serializers.CharField(max_length=10000)
 
 
 class ContestProblemSerializer(serializers.ModelSerializer):
@@ -112,6 +116,8 @@ class EditContestProblemSerializer(serializers.Serializer):
     visible = serializers.BooleanField()
     sort_index = serializers.CharField(max_length=30)
     score = serializers.IntegerField(required=False, default=0)
+    subtask = serializers.BooleanField()
+    subtask_info = serializers.CharField(max_length=10000)
 
 
 class ContestPasswordVerifySerializer(serializers.Serializer):

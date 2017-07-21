@@ -77,7 +77,8 @@ require(["jquery", "codeMirror", "csrfToken", "bsAlert", "ZeroClipboard"],
                 5: {"alert_class": "warning", message: "Format Error"},
                 6: {"alert_class": "danger", message: "Wrong Answer"},
                 7: {"alert_class": "danger", message: "System Error"},
-                8: {"alert_class": "info", message: "Waiting"}
+                8: {"alert_class": "info", message: "Waiting"},
+                9: {"alert_class": "info", message: "OI contest is running"}
             };
 
             var html = '<div class="alert alert-' +
@@ -89,7 +90,7 @@ require(["jquery", "codeMirror", "csrfToken", "bsAlert", "ZeroClipboard"],
             if (!data.result) {
                 html += "CPU time: " + data.accepted_answer_time + "ms &nbsp;&nbsp;";
             }
-            html += ('<a href="/submission/' + submissionId + '/" target="_blank">查看详情</a></div> </div>');
+            //html += ('<a href="/submission/' + submissionId + '/" target="_blank">查看详情</a></div> </div>');
 
             return html;
         }

@@ -100,13 +100,12 @@ class JudgeDispatcher(object):
             else:
                 info=json.loads(self.submission.info)
                 if "test_case" in info[0]:
-                    problem=Problem.objects.get(id=self.submission.problem_id)
-                    info = sorted(info, key=lambda x: x["test_case"])
-                    if not problem.subtask:
-                        for item in info:
-                            if item['result'] == 0:
-                                score = score + 100.0 / len(info)
+                    if self.submission.contest_id:
+                        problem=ContestProblem.objects.get(id=self.submission.problem_id)
                     else:
+                        problem=Problem.objects.get(id=self.submission.problem_id)
+                    info = sorted(info, key=lambda x: x["test_case"])
+                    if problem.subtask:
                         subtask_info = json.loads(problem.subtask_info)
                         subtask_info = sorted(subtask_info, key=lambda x: x["case"])
                         for item in subtask_info:
@@ -116,6 +115,11 @@ class JudgeDispatcher(object):
                                     pass_all = False
                             if pass_all:
                                 score = score + item['score']
+                    else:
+                        for item in info:
+                            if item['result'] == 0:
+                                score = score + 100.0 / len(info)
+
             self.submission.score = score
             self.submission.save(
                 update_fields=["judge_start_time", "result", "score", "info", "accepted_answer_time", "judge_end_time"])

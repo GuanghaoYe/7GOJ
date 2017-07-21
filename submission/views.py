@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from account.decorators import login_required, super_admin_required
 from account.models import SUPER_ADMIN, User
 from problem.models import Problem
-from contest.models import ContestProblem, Contest
+from contest.models import ContestProblem, Contest,CONTEST_UNDERWAY
 from contest.decorators import check_user_contest_permission
 from utils.shortcuts import (serializer_invalid_response, error_response,
                              success_response, error_page, paginate, build_query_string)
@@ -124,6 +124,12 @@ class SubmissionAPIView(APIView):
         response_data = {"result": submission.result}
         if submission.result == 0:
             response_data["accepted_answer_time"] = submission.accepted_answer_time
+        if submission.contest_id:
+            contest=Contest.objects.get(id=submission.contest_id)
+            if contest.status == CONTEST_UNDERWAY:
+                if contest.contest_system == 1:
+                    response_data["result"]  =9
+
         return success_response(response_data)
 
 

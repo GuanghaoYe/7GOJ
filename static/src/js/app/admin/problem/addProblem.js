@@ -57,7 +57,9 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                             input_description: vm.inputDescription,
                             output_description: vm.outputDescription,
                             difficulty: vm.difficulty,
-                            spj: spjVM.spj
+                            spj: spjVM.spj,
+                            subtask: vm.subtask,
+                            subtask_info:vm.subtaskInfo
                         };
                         if (spjVM.spj) {
                             ajaxData.spj_language = spjVM.spjLanguage;
@@ -108,6 +110,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                 vm.uploadSuccess = false;
                 vm.source = "";
                 vm.uploadProgress = 0;
+                vm.subtask=0;
+                vm.subtaskInfo="";
             }
             else {
                 var vm = avalon.define({
@@ -126,6 +130,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                     uploadSuccess: false,
                     source: "",
                     uploadProgress: 0,
+                    subtask:0,
+                    subtaskInfo:"",
 
                     problemDescriptionEditor: {
                         editorId: "problem-description-editor",

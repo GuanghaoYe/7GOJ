@@ -70,7 +70,8 @@ class ContestAdminAPIView(APIView):
                                                  real_time_rank=data["real_time_rank"], password=data["password"],
                                                  start_time=dateparse.parse_datetime(data["start_time"]),
                                                  end_time=dateparse.parse_datetime(data["end_time"]),
-                                                 created_by=request.user, visible=data["visible"])
+                                                 created_by=request.user, visible=data["visible"],
+						 contest_system=data["contest_system"])
             except IntegrityError:
                 return error_response(u"比赛名已经存在")
             contest.groups.add(*groups)
@@ -134,8 +135,8 @@ class ContestAdminAPIView(APIView):
             contest.end_time = dateparse.parse_datetime(data["end_time"])
             contest.visible = data["visible"]
             contest.password = data["password"]
+            contest.contest_system = data["contest_system"]
             contest.save()
-
             contest.groups.clear()
             contest.groups.add(*groups)
             return success_response(ContestSerializer(contest).data)
@@ -165,7 +166,8 @@ class ContestAdminAPIView(APIView):
         if request.user.admin_type == SUPER_ADMIN:
             contest = Contest.objects.all().order_by("-create_time")
         else:
-            contest = Contest.objects.filter(groups__in=request.user.managed_groups.all()).distinct().order_by("-create_time")
+            contest = Contest.objects.filter(groups__in=request.user.managed_groups.all()).distinct().order_by(
+                "-create_time")
         visible = request.GET.get("visible", None)
         if visible:
             contest = contest.filter(visible=(visible == "true"))
@@ -215,7 +217,10 @@ class ContestProblemAdminAPIView(APIView):
                                                             created_by=request.user,
                                                             hint=data["hint"],
                                                             contest=contest,
-                                                            sort_index=data["sort_index"])
+                                                            sort_index=data["sort_index"],
+                                                            subtask=data["subtask"],
+                                                            subtask_info=data["subtask_info"]
+                                                            )
             return success_response(ContestProblemSerializer(contest_problem).data)
         else:
             return serializer_invalid_response(serializer)
@@ -255,6 +260,8 @@ class ContestProblemAdminAPIView(APIView):
             contest_problem.visible = data["visible"]
             contest_problem.sort_index = data["sort_index"]
             contest_problem.last_update_time = now()
+            contest_problem.subtask = data["subtask"]
+            contest_problem.subtask_info = data["subtask_info"]
             contest_problem.save()
             return success_response(ContestProblemSerializer(contest_problem).data)
         else:
@@ -325,7 +332,8 @@ class ContestPasswordVerifyAPIView(APIView):
         if serializer.is_valid():
             data = request.data
             try:
-                contest = Contest.objects.get(id=data["contest_id"], contest_type__in=[PASSWORD_PROTECTED_CONTEST,PASSWORD_PROTECTED_GROUP_CONTEST])
+                contest = Contest.objects.get(id=data["contest_id"], contest_type__in=[PASSWORD_PROTECTED_CONTEST,
+                                                                                       PASSWORD_PROTECTED_GROUP_CONTEST])
             except Contest.DoesNotExist:
                 return error_response(u"比赛不存在")
 
@@ -362,7 +370,9 @@ def contest_problem_page(request, contest_id, contest_problem_id):
         problem = ContestProblem.objects.get(id=contest_problem_id, visible=True)
     except ContestProblem.DoesNotExist:
         return error_page(request, u"比赛题目不存在")
-    warning = u"您已经提交过本题的正确答案，重复提交可能造成时间累计。"
+    warning = u"ovo"
+    if contest.contest_system == 0:
+        warning = u"您已经提交过本题的正确答案，重复提交可能造成时间累计。"
     show_warning = False
 
     try:
@@ -389,6 +399,8 @@ def contest_problem_page(request, contest_id, contest_problem_id):
         contest_set = Contest.objects.filter(groups__in=request.user.managed_groups.all())
         if contest in contest_set:
             show_submit_code_area = True
+    if contest.contest_system==1:
+        show_warning=0
     return render(request, "oj/problem/contest_problem.html", {"problem": problem,
                                                                "contest": contest,
                                                                "samples": json.loads(problem.samples),
@@ -403,9 +415,14 @@ def contest_problems_list_page(request, contest_id):
     比赛所有题目的列表页
     """
     contest = Contest.objects.get(id=contest_id)
-    contest_problems = ContestProblem.objects.filter(contest=contest, visible=True).select_related("contest").order_by("sort_index")
+    contest_system = contest.contest_system
+    if contest.status != CONTEST_UNDERWAY:
+        contest_system = 0
+    contest_problems = ContestProblem.objects.filter(contest=contest, visible=True).select_related("contest").order_by(
+        "sort_index")
     return render(request, "oj/contest/contest_problems_list.html", {"contest_problems": contest_problems,
-                                                                     "contest": {"id": contest_id}})
+                                                                     "contest": {"id": contest_id,
+                                                                                 "system": contest_system}})
 
 
 def contest_list_page(request, page=1):
@@ -450,10 +467,19 @@ def contest_list_page(request, page=1):
 
 
 def _get_rank(contest_id):
-    rank = ContestRank.objects.filter(contest_id=contest_id). \
+    contest = Contest.objects.get(id=contest_id)
+    if contest.contest_system == 0:
+        rank = ContestRank.objects.filter(contest_id=contest_id). \
             select_related("user"). \
             order_by("-total_ac_number", "total_time"). \
             values("id", "user__id", "user__username", "user__real_name", "user__userprofile__student_id",
+                   "contest_id", "submission_info", "total_submission_number", "total_ac_number", "total_time")
+    elif contest.contest_system == 1:
+        rank = ContestRank.objects.filter(contest_id=contest_id). \
+            select_related("user"). \
+            order_by("-total_score"). \
+            values("id", "user__id", "total_score", "user__username", "user__real_name",
+                   "user__userprofile__student_id",
                    "contest_id", "submission_info", "total_submission_number", "total_ac_number", "total_time")
     rank_number = 1
     for item in rank:
@@ -464,13 +490,40 @@ def _get_rank(contest_id):
     return rank
 
 
+def _probability(x, y):
+    return 1.0 / (1 + 10 ** ((y - x) / 400))
+
+
+def _get_seed(rank, user__id):
+    ret = 0.0
+    user = User.objects.get(id=user__id)
+    for item in rank:
+        if item["user__id"] == user__id:
+            continue
+        else:
+            ret = ret + _probability(user.userprofile.rating, rank["user__userprofile__rating"])
+    return ret
+
+
+def update_rating(contest_id):
+    contest = Contest.objects.get(id=contest_id)
+    rank = ContestRank.objects.filter(contest_id=contest_id). \
+        select_related("user"). \
+        order_by("-total_score"). \
+        values("id", "user__id", "user__userprofile__rating", "user__userprofile__rating_info", "user__userprofile__id")
+    seed = []
+    for item in rank:
+        seed.append()
+
+
 @check_user_contest_permission
 def contest_rank_page(request, contest_id):
     contest = Contest.objects.get(id=contest_id)
     contest_problems = ContestProblem.objects.filter(contest=contest, visible=True).order_by("sort_index")
 
     force_real_time_rank = False
-    if request.GET.get("force_real_time_rank") == "true" and (request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by):
+    if request.GET.get("force_real_time_rank") == "true" and (
+            request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by):
         rank = _get_rank(contest_id)
         force_real_time_rank = True
     else:
@@ -519,16 +572,22 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
     我比赛单个题目的所有提交列表
     """
     try:
-        Contest.objects.get(id=contest_id)
+        contest = Contest.objects.get(id=contest_id)
     except Contest.DoesNotExist:
         return error_page(request, u"比赛不存在")
     try:
         contest_problem = ContestProblem.objects.get(id=contest_problem_id, visible=True)
     except ContestProblem.DoesNotExist:
         return error_page(request, u"比赛问题不存在")
-    submissions = Submission.objects.filter(user_id=request.user.id, problem_id=contest_problem.id, contest_id=contest_id). \
+    submissions = Submission.objects.filter(user_id=request.user.id, problem_id=contest_problem.id,
+                                            contest_id=contest_id). \
         order_by("-create_time"). \
         values("id", "result", "create_time", "accepted_answer_time", "language")
+    if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            if item["result"] != 4 and item["result"]!=7:
+                item['result'] = 9
+            item["accepted_answer_time"] = 0
     return render(request, "oj/submission/problem_my_submissions_list.html",
                   {"submissions": submissions, "problem": contest_problem})
 
@@ -546,11 +605,14 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
     submissions = Submission.objects.filter(contest_id=contest_id). \
         values("id", "contest_id", "problem_id", "result", "create_time",
                "accepted_answer_time", "language", "user_id").order_by("-create_time")
-
+    if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            if item["result"] != 4 and item['result'] !=7:
+                item["result"] = 9
+            item["accepted_answer_time"] = 0
     # 如果比赛已经开始，就不再显示之前测试题目的提交
     if contest.status != CONTEST_NOT_START:
         submissions = submissions.filter(create_time__gte=contest.start_time)
-
     user_id = request.GET.get("user_id", None)
     if user_id:
         submissions = submissions.filter(user_id=request.GET.get("user_id"))
@@ -605,7 +667,23 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
             item["show_link"] = True
         else:
             item["show_link"] = False
+        if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+            if request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by:
+                item["show_link"] = True
+            else:
+                item["show_link"] = False
+        if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+            if item["result"] != 4 and item["result"]!=7:
+                item["result"] = 9
+	    else:
+	        item["show_link"]=True
+            item["accepted_answer_time"] = 0
 
+    if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+        for item in submissions:
+            if item["result"] != 4 and item["result"]!=7:
+                item["result"] = 9
+            item["accepted_answer_time"] = 0
     return render(request, "oj/contest/submissions_list.html",
                   {"submissions": submissions, "page": int(page),
                    "previous_page": previous_page, "next_page": next_page, "start_id": int(page) * 20 - 20,

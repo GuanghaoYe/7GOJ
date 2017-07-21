@@ -19,6 +19,7 @@
             <th>创建时间</th>
             <th>创建者</th>
             <th>可见</th>
+            <th>类型</th>
             <th></th>
         </tr>
         <tr ms-repeat="contestList">
@@ -28,6 +29,7 @@
             <td>{{ el.create_time|date("yyyy-MM-dd HH:mm:ss")}}</td>
             <td>{{ el.created_by.username }}</td>
             <td ms-text="el.visible?'可见':'不可见'"></td>
+            <td ms-text="el.contest_system?'OI':'ICPC'"></td>
             <td>
                 <a class="btn btn-info btn-sm" href="javascript:void(0)" ms-click="editContest(el.id)">编辑</a>
                 <a class="btn btn-info btn-sm" href="javascript:void(0)" ms-click="showContestProblems(el.id)">题目</a>
