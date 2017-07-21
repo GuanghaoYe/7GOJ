@@ -35,6 +35,8 @@ class CreateProblemSerializer(serializers.Serializer):
     hint = serializers.CharField(allow_blank=True)
     source = serializers.CharField(max_length=100, required=False, default=None)
     visible = serializers.BooleanField()
+    subtask = serializers.BooleanField()
+    subtask_info = serializers.CharField(max_length=10000)
 
 
 class ProblemTagSerializer(serializers.ModelSerializer):

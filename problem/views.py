@@ -104,7 +104,9 @@ class ProblemAdminAPIView(APIView):
                                              difficulty=data["difficulty"],
                                              created_by=request.user,
                                              hint=data["hint"],
-                                             visible=data["visible"])
+                                             visible=data["visible"],
+                                             subtask=data["subtask"],
+                                             subtask_info=data["subtask_info"])
             for tag in data["tags"]:
                 try:
                     tag = ProblemTag.objects.get(name=tag)
