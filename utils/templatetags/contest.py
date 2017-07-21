@@ -79,4 +79,5 @@ register.filter("contest_status_color", get_contest_status_color)
 register.filter("format_seconds", get_the_formatted_time)
 register.simple_tag(get_submission_class, name="get_submission_class")
 register.simple_tag(get_submission_content, name="get_submission_content")
+register.simple_tag(get_submission_score,name="get_submission_score")
 
