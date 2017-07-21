@@ -63,7 +63,11 @@
                                 {% autoescape off %}
                                 {% for problem in contest_problems %}
                                     <td class="{% get_submission_class item problem %}">
-                                    {% get_submission_content item problem %}
+                                    {% ifequal contest.contest_system 0 %}
+                                        {% get_submission_content item problem %}
+                                    {% else %}
+                                        {% get_submission_score item problem %}
+                                    {% endifequal %}
                                     </td>
                                 {% endfor %}
                                 {% endautoescape %}

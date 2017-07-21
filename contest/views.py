@@ -71,7 +71,7 @@ class ContestAdminAPIView(APIView):
                                                  start_time=dateparse.parse_datetime(data["start_time"]),
                                                  end_time=dateparse.parse_datetime(data["end_time"]),
                                                  created_by=request.user, visible=data["visible"],
-						 contest_system=data["contest_system"])
+                                                 contest_system=data["contest_system"])
             except IntegrityError:
                 return error_response(u"比赛名已经存在")
             contest.groups.add(*groups)
@@ -399,8 +399,8 @@ def contest_problem_page(request, contest_id, contest_problem_id):
         contest_set = Contest.objects.filter(groups__in=request.user.managed_groups.all())
         if contest in contest_set:
             show_submit_code_area = True
-    if contest.contest_system==1:
-        show_warning=0
+    if contest.contest_system == 1:
+        show_warning = 0
     return render(request, "oj/problem/contest_problem.html", {"problem": problem,
                                                                "contest": contest,
                                                                "samples": json.loads(problem.samples),
@@ -484,9 +484,14 @@ def _get_rank(contest_id):
     rank_number = 1
     for item in rank:
         # 只有有ac的题目而且不是打星的队伍才参与排名
-        if item["total_ac_number"] > 0 and item["user__username"][0] != "*":
-            item["rank_number"] = rank_number
-            rank_number += 1
+        if contest.contest_system==0:
+            if item["total_ac_number"] > 0 and item["user__username"][0] != "*":
+                item["rank_number"] = rank_number
+                rank_number += 1
+        else:
+            if item["total_score"] > 0 and item["user__username"][0] != "*":
+                item["rank_number"] = rank_number
+                rank_number += 1
     return rank
 
 
@@ -520,10 +525,9 @@ def update_rating(contest_id):
 def contest_rank_page(request, contest_id):
     contest = Contest.objects.get(id=contest_id)
     contest_problems = ContestProblem.objects.filter(contest=contest, visible=True).order_by("sort_index")
-
     force_real_time_rank = False
     if request.GET.get("force_real_time_rank") == "true" and (
-            request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by):
+                    request.user.admin_type == SUPER_ADMIN or request.user == contest.created_by):
         rank = _get_rank(contest_id)
         force_real_time_rank = True
     else:
@@ -585,7 +589,7 @@ def contest_problem_my_submissions_list_page(request, contest_id, contest_proble
         values("id", "result", "create_time", "accepted_answer_time", "language")
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            if item["result"] != 4 and item["result"]!=7:
+            if item["result"] != 4 and item["result"] != 7:
                 item['result'] = 9
             item["accepted_answer_time"] = 0
     return render(request, "oj/submission/problem_my_submissions_list.html",
@@ -607,7 +611,7 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
                "accepted_answer_time", "language", "user_id").order_by("-create_time")
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            if item["result"] != 4 and item['result'] !=7:
+            if item["result"] != 4 and item['result'] != 7:
                 item["result"] = 9
             item["accepted_answer_time"] = 0
     # 如果比赛已经开始，就不再显示之前测试题目的提交
@@ -673,15 +677,15 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
             else:
                 item["show_link"] = False
         if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
-            if item["result"] != 4 and item["result"]!=7:
+            if item["result"] != 4 and item["result"] != 7:
                 item["result"] = 9
-	    else:
-	        item["show_link"]=True
+            else:
+                item["show_link"] = True
             item["accepted_answer_time"] = 0
 
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
-            if item["result"] != 4 and item["result"]!=7:
+            if item["result"] != 4 and item["result"] != 7:
                 item["result"] = 9
             item["accepted_answer_time"] = 0
     return render(request, "oj/contest/submissions_list.html",

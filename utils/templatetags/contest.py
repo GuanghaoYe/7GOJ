@@ -47,6 +47,15 @@ def get_submission_class(rank, problem):
         return _class
 
 
+def get_submission_score(rank, problem):
+    submission_info = json.loads(rank["submission_info"])
+    if str(problem.id) not in submission_info:
+        return "0"
+    else:
+        submission = submission_info[str(problem.id)]
+        return str(submission["score"])
+
+
 def get_submission_content(rank, problem):
     submission_info = json.loads(rank["submission_info"])
     if str(problem.id) not in submission_info:
