@@ -86,3 +86,5 @@ class EditProblemSerializer(serializers.Serializer):
     samples = ProblemSampleSerializer()
     hint = serializers.CharField(allow_blank=True)
     visible = serializers.BooleanField()
+    subtask = serializers.BooleanField()
+    subtask_info = serializers.CharField(max_length=10000)

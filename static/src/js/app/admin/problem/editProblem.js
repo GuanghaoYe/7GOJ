@@ -58,7 +58,9 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                             input_description: vm.inputDescription,
                             output_description: vm.outputDescription,
                             difficulty: vm.difficulty,
-                            spj: spjVM.spj
+                            spj: spjVM.spj,
+                            subtask: vm.subtask,
+                            subtask_info : vm.subtaskInfo
                         };
                         if (spjVM.spj) {
                             ajaxData.spj_language = spjVM.spjLanguage;
@@ -112,6 +114,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                     source: "",
                     testCaseList: [],
                     uploadProgress: 0,
+                    subtask: false,
+                    subtaskInfo: "",
 
                     problemDescriptionEditor: {
                         editorId: "problem-description-editor",
@@ -171,6 +175,8 @@ require(["jquery", "avalon", "editor", "uploader", "bsAlert",
                         vm.difficulty = problem.difficulty;
                         vm.inputDescription = problem.input_description;
                         vm.outputDescription = problem.output_description;
+                        vm.subtask = problem.subtask;
+                        vm.subtaskInfo = problem.subtask_info;
                         avalon.vmodels.testCaseUploader.setTestCase(problem.test_case_id);
                         var spjVM = avalon.vmodels.spjConfig;
                         spjVM.spj = problem.spj;
