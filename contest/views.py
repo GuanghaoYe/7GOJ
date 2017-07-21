@@ -71,13 +71,12 @@ class ContestAdminAPIView(APIView):
                                                  start_time=dateparse.parse_datetime(data["start_time"]),
                                                  end_time=dateparse.parse_datetime(data["end_time"]),
                                                  created_by=request.user, visible=data["visible"],
-                                                 contest_system=data["contest_system"])
+						 contest_system=data["contest_system"])
             except IntegrityError:
                 return error_response(u"比赛名已经存在")
             contest.groups.add(*groups)
             return success_response(ContestSerializer(contest).data)
         else:
-            ## return error_response(u"naive!")
             return serializer_invalid_response(serializer)
 
     def put(self, request):
@@ -668,8 +667,13 @@ def contest_problem_submissions_list_page(request, contest_id, page=1):
                 item["show_link"] = True
             else:
                 item["show_link"] = False
-        if item["result"]==4 or item["result"]==7:
-            item["show_link"] =True
+        if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
+            if item["result"] != 4 and item["result"]!=7:
+                item["result"] = 9
+	    else:
+	        item["show_link"]=True
+            item["accepted_answer_time"] = 0
+
     if contest.contest_system == 1 and contest.status == CONTEST_UNDERWAY:
         for item in submissions:
             if item["result"] != 4 and item["result"]!=7:
