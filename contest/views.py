@@ -135,8 +135,8 @@ class ContestAdminAPIView(APIView):
             contest.end_time = dateparse.parse_datetime(data["end_time"])
             contest.visible = data["visible"]
             contest.password = data["password"]
+            contest.contest_system = data["contest_system"]
             contest.save()
-
             contest.groups.clear()
             contest.groups.add(*groups)
             return success_response(ContestSerializer(contest).data)
