@@ -1,8 +1,12 @@
 {% extends "oj_base.html" %}
+{% block css_block %}
+    <link href="/static/css/simditor/simditor.css" rel="stylesheet">
+{% endblock %}
 {% block title %}
     {{ announcement.title }}
 {% endblock %}
 {% block body %}
+{% load user %}
     <div class="container main">
         <h1 class="text-center">{{ announcement.title }}</h1>
 
@@ -19,5 +23,47 @@
         <div>
             <p>{{ announcement.content|safe }}</p>
         </div>
+        {% if comments %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Content</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in comments %}
+                    <tr>
+                        <th scope="row" width="10%">
+                            {{ forloop.counter }}
+                        </th>
+                        <td width="10%"><a href="/user/{{ item.created_by }}">{{ item.created_by | get_username }}</a></td>
+                        <td> <p class="comment-detail">{{ item.content|safe }} </p> </td>
+                        <td width="10%">{{ item.create_time }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        <div ms-controller="comment" class="col-md-9">
+            <form id="comment-form">
+                <div class="form-group">
+                    <label>评论</label>
+
+                    <ms:editor $id="createCommentEditor" config="createCommentEditor"></ms:editor>
+
+                    <div class="help-block with-errors"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">发布评论</button>
+                </div>
+            </form>
+        </div>
     </div>
+{% endblock %}
+{% block js_block %}
+    <script src="/static/js/app/oj/comment/comment.js"></script>
 {% endblock %}

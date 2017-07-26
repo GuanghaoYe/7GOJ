@@ -1,6 +1,7 @@
 # coding=utf-8
 import datetime
 from account.models import User
+from django import template
 
 
 def get_username(user_id):
@@ -10,7 +11,7 @@ def get_username(user_id):
         return ""
 
 
-from django import template
+
 
 register = template.Library()
 register.filter("get_username", get_username)

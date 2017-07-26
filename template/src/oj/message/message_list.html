@@ -1,0 +1,65 @@
+{% extends "oj_base.html" %}
+{% block title %}
+    Message Board
+{% endblock %}
+{% block body %}
+    {% load problem %}
+    <div class="container main">
+        <div class="row">
+            <div class="col-md-9 col-lg-9">
+                <div>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>#</th>
+                            <th>题目</th>
+                            <th><a href="/problems/?order_by={{ difficulty_order }}">难度</a></th>
+                            <th>通过率</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in problems %}
+                            <tr>
+                                <th><span class="{% get_problem_status request.user.problems_status.problems item.id %}"></span></th>
+                                <th scope="row"><a href="/problem/{{ item.id }}/">{{ item.id }}</a></th>
+                                <td><a href="/problem/{{ item.id }}/">{{ item.title }}</a></td>
+                                <td>
+                                    {% ifequal item.difficulty 1 %}
+                                        简单
+                                    {% else %}
+                                        {% ifequal item.difficulty 2 %}
+                                            中等
+                                        {% else %}
+                                            难
+                                        {% endifequal %}
+                                    {% endifequal %}</td>
+                                <td>{{ item|accepted_radio }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <nav>
+                        <ul class="pager">
+                            {% if previous_page %}
+                                <li class="previous"><a
+                                        href="/message/{{ previous_page }}/">
+                                    <span aria-hidden="true">&larr;</span> 上一页</a></li>
+                            {% endif %}
+                            {% if next_page %}
+                                <li class="next"><a
+                                        href="/message/{{ next_page }}/">下一页 <span
+                                        aria-hidden="true">&rarr;</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js_block %}
+
+{% endblock %}

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 
 from django.shortcuts import render
 from utils.shortcuts import serializer_invalid_response, error_response, success_response
-
+from comment.models import Comment
 from utils.shortcuts import paginate, error_page
 from account.models import SUPER_ADMIN, ADMIN
 from account.decorators import super_admin_required
@@ -21,7 +21,10 @@ def announcement_page(request, announcement_id):
         announcement = Announcement.objects.get(id=announcement_id, visible=True)
     except Announcement.DoesNotExist:
         return error_page(request, u"公告不存在")
-    return render(request, "oj/announcement/announcement.html", {"announcement": announcement})
+    comments = Comment.objects.filter(announcement_id=announcement_id).order_by("create_time").values("create_time",
+                                                                                                       "created_by",
+                                                                                                       "content")
+    return render(request, "oj/announcement/announcement.html", {"announcement": announcement, "comments": comments})
 
 
 class AnnouncementAdminAPIView(APIView):
