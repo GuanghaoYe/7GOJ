@@ -57,7 +57,7 @@ urlpatterns = [
 
     url(r'^api/admin/upload_image/$', SimditorImageUploadAPIView.as_view(), name="simditor_upload_image"),
     url(r'^api/admin/announcement/$', AnnouncementAdminAPIView.as_view(), name="announcement_admin_api"),
-    url(r'^api/admin/comment/$', CommentAdminAPIView.as_view(), name="comment_admin_api"),
+    url(r'^api/comment/$', CommentAdminAPIView.as_view(), name="comment_admin_api"),
     url(r'^api/admin/contest/$', ContestAdminAPIView.as_view(), name="contest_admin_api"),
     url(r'^api/admin/user/$', UserAdminAPIView.as_view(), name="user_admin_api"),
     url(r'^api/admin/group/$', GroupAdminAPIView.as_view(), name="group_admin_api"),

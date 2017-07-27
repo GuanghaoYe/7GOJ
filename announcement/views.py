@@ -6,13 +6,14 @@ from utils.shortcuts import serializer_invalid_response, error_response, success
 from comment.models import Comment
 from utils.shortcuts import paginate, error_page
 from account.models import SUPER_ADMIN, ADMIN
-from account.decorators import super_admin_required
+from account.decorators import super_admin_required,login_required
 from group.models import Group
 from .models import Announcement
 from .serializers import (CreateAnnouncementSerializer, AnnouncementSerializer,
                           EditAnnouncementSerializer)
 
 
+@login_required
 def announcement_page(request, announcement_id):
     """
     公告的详情页面
@@ -22,8 +23,8 @@ def announcement_page(request, announcement_id):
     except Announcement.DoesNotExist:
         return error_page(request, u"公告不存在")
     comments = Comment.objects.filter(announcement_id=announcement_id).order_by("create_time").values("create_time",
-                                                                                                       "created_by",
-                                                                                                       "content")
+                                                                                                      "created_by",
+                                                                                                      "content")
     return render(request, "oj/announcement/announcement.html", {"announcement": announcement, "comments": comments})
 
 

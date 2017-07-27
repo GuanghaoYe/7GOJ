@@ -40,7 +40,11 @@
                             {{ forloop.counter }}
                         </th>
                         <td width="10%"><a href="/user/{{ item.created_by }}">{{ item.created_by | get_username }}</a></td>
+                        {% if item.created_by|is_super_admin  %}
+                        <td> <p class="comment-detail">{{ item.content|safe }} </p> ovo </td>
+                        {% else %}
                         <td> <p class="comment-detail">{{ item.content|safe }} </p> </td>
+                        {% endif %}
                         <td width="10%">{{ item.create_time }}</td>
                     </tr>
                 {% endfor %}
@@ -66,4 +70,5 @@
 {% endblock %}
 {% block js_block %}
     <script src="/static/js/app/oj/comment/comment.js"></script>
+    {% include "oj/problem/_mathjax_js.html" %}
 {% endblock %}

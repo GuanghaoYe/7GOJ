@@ -13,13 +13,15 @@ from account.decorators import login_required
 
 
 class CommentAdminAPIView(APIView):
+
     @login_required
     def post(self, request):
         serializer = CreateCommentSerializer(data=request.data)
         # return serializer_invalid_response(serializer)
         if serializer.is_valid():
             data = serializer.data
-            Comment.objects.create(announcement_id=data["announcement_id"],content=data["content"], created_by=request.user)
+            Comment.objects.create(announcement_id=data["announcement_id"], content=data["content"],
+                                   created_by=request.user)
             return success_response(u"评论发布成功！")
         else:
             return serializer_invalid_response(serializer)

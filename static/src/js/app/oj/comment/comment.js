@@ -50,7 +50,7 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                         }
 
                         $.ajax({
-                            url: "/api/admin/comment/",
+                            url: "/api/comment/",
                             contentType: "application/json;charset=UTF-8",
                             dataType: "json",
                             method: "put",
@@ -81,7 +81,7 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
             }
 
             function getPage(page) {
-                var url = "/api/admin/comment/?paging=true&page=" + page + "&page_size=20";
+                var url = "/api/comment/?paging=true&page=" + page + "&page_size=20";
                 if (vm.showVisibleOnly)
                     url += "&visible=true";
                 $.ajax({
@@ -105,12 +105,12 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                     var content = avalon.vmodels.createCommentEditor.content;
                     var announcementId = location.pathname.split("/")[2];
                     if (content == "") {
-                        bsAlert("请填写公告内容");
+                        bsAlert("请填写内容");
                         return false;
                     }
                     $.ajax({
                         beforeSend: csrfTokenHeader,
-                        url: "/api/admin/comment/",
+                        url: "/api/comment/",
                         contentType: "application/json",
                         data: JSON.stringify({
                             content: content,
