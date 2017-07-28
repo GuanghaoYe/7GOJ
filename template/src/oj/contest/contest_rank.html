@@ -35,9 +35,12 @@
                         <tr>
                             <th>#</th>
                             <th class="text-center">用户名</th>
-                            <th class="text-center">Score</th>
-                            <th class="text-center">AC / 总提交</th>
-                            <th class="text-center">用时 + 罚时</th>
+                            {% ifequal contest.contest_system 0 %}
+                                <th class="text-center">AC / 总提交</th>
+                                <th class="text-center">用时 + 罚时</th>
+                            {% else %}
+                                <th class="text-center">Score</th>
+                            {% endifequal %}
                             {% for item in contest_problems %}
                                 <th class="text-center">
                                     <a href="/contest/{{ contest.id }}/submissions/?problem_id={{ item.id }}">{{ item.sort_index }}</a>
@@ -57,13 +60,20 @@
                                         （{{ item.user__real_name }}）
                                     {% endif %}
                                 </td>
-                                <td>{{ item.total_score }}</td>
-                                <td>{{ item.total_ac_number }} / {{ item.total_submission_number }}</td>
-                                <td>{% if item.total_time %}{{ item.total_time|format_seconds }}{% else %}--{% endif %}</td>
+                                {% ifequal contest.contest_system 0 %}
+                                    <td>{{ item.total_ac_number }} / {{ item.total_submission_number }}</td>
+                                    <td>{% if item.total_time %}{{ item.total_time|format_seconds }}{% else %}--{% endif %}</td>
+                                {% else %}
+                                    <td>{{ item.total_score }}</td>
+                                {% endifequal %}
                                 {% autoescape off %}
                                 {% for problem in contest_problems %}
                                     <td class="{% get_submission_class item problem %}">
-                                    {% get_submission_content item problem %}
+                                    {% ifequal contest.contest_system 0 %}
+                                        {% get_submission_content item problem %}
+                                    {% else %}
+                                        {% get_submission_score item problem %}
+                                    {% endifequal %}
                                     </td>
                                 {% endfor %}
                                 {% endautoescape %}

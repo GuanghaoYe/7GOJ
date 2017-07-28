@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'group',
     'problem',
     'admin',
+    'comment',
     'submission',
     'contest',
     'judge',

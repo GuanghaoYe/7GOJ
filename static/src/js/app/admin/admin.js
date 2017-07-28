@@ -124,7 +124,7 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "bootstrap"], function ($, 
             beforeSend: csrfTokenHeader,
             dataType: "json",
             error: function () {
-                bsAlert("请求失败");
+                bsAlert("垃圾！请求失败");
             }
         });
     });

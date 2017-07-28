@@ -93,7 +93,14 @@ class JudgeClient(object):
             # 这时候需要去除用户输出最后的空格和换行 再去比较md5
             md5 = hashlib.md5()
             # 比较和返回去除空格后的md5比较结果
-            md5.update(f.read().rstrip())
+            c = ""
+            with open(output_path, "rb") as f:
+                for line in f:
+                    line = line.rstrip()
+                    if line:
+                        c = c+line+'\n'
+            c.rstrip()
+            md5.update(c)
             output_md5 = md5.hexdigest()
             return output_md5, output_md5 == test_case_config["striped_output_md5"]
 

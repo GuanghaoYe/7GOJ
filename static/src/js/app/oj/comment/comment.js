@@ -2,20 +2,19 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
     function ($, avalon, csrfTokenHeader, bsAlert, editor) {
         avalon.ready(function () {
 
-            if (avalon.vmodels.announcement){
-                var vm = avalon.vmodels.announcement;
+            if (avalon.vmodels.comment){
+                var vm = avalon.vmodels.comment;
             }
             else {
                 var vm = avalon.define({
-                    $id: "announcement",
-                    announcementList: [],
+                    $id: "comment",
+                    commentList: [],
                     isEditing: false,
                     showVisibleOnly: false,
 
                     //编辑器同步变量
-                    announcementId: -1,
-                    newTitle: "",
-                    announcementVisible: false,
+                    commentId: -1,
+                    commentVisible: false,
 
                     pager: {
                         getPage: function(page){
@@ -23,46 +22,42 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                         }
                     },
 
-                    createAnnouncementEditor: {
-                        editorId: "create-announcement-editor",
-                        placeholder: "公告内容"
+                    createCommentEditor: {
+                        editorId: "create-comment-editor",
+                        placeholder: "内容"
                     },
 
-                    editAnnouncementEditor: {
-                        editorId: "edit-announcement-editor",
-                        placeholder: "公告内容"
+                    editCommentEditor: {
+                        editorId: "edit-comment-editor",
+                        placeholder: "内容"
                     },
 
-                    editAnnouncement: function (announcement) {
-                        vm.newTitle = announcement.title;
-                        vm.announcementId = announcement.id;
-                        avalon.vmodels.editAnnouncementEditor.content = announcement.content;
-                        vm.announcementVisible = announcement.visible;
+                    editComment: function (comment) {
+                        vm.commentId = comment.id;
+                        avalon.vmodels.editCommentEditor.content = comment.content;
+                        vm.comment = comment.visible;
                         vm.isEditing = true;
                     },
                     cancelEdit: function () {
                         vm.isEditing = false;
                     },
                     submitChange: function () {
-                        var title = vm.newTitle;
-                        var content = avalon.vmodels.editAnnouncementEditor.content;
+                        var content = avalon.vmodels.editCommentEditor.content;
 
-                        if (content == "" || title == "") {
-                            bsAlert("标题和内容都不能为空");
+                        if (content == "") {
+                            bsAlert("内容不能为空");
                             return false;
                         }
 
                         $.ajax({
-                            beforeSend: csrfTokenHeader,
-                            url: "/api/admin/announcement/",
+                            url: "/api/comment/",
                             contentType: "application/json;charset=UTF-8",
                             dataType: "json",
                             method: "put",
                             data: JSON.stringify({
-                                id: vm.announcementId,
-                                title: title,
+                                id: vm.commentId,
                                 content: content,
-                                visible: vm.announcementVisible
+                                visible: vm.commentVisible
                             }),
                             success: function (data) {
                                 if (!data.code) {
@@ -81,12 +76,12 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
 
                 vm.$watch("showVisibleOnly", function () {
                     getPage(1);
-                    avalon.vmodels.announcementPager.currentPage = 1;
+                    avalon.vmodels.commentcurrentPage = 1;
                 });
             }
 
             function getPage(page) {
-                var url = "/api/admin/announcement/?paging=true&page=" + page + "&page_size=20";
+                var url = "/api/comment/?paging=true&page=" + page + "&page_size=20";
                 if (vm.showVisibleOnly)
                     url += "&visible=true";
                 $.ajax({
@@ -94,8 +89,8 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                     method: "get",
                     success: function (data) {
                         if (!data.code) {
-                            vm.announcementList = data.data.results;
-                            avalon.vmodels.announcementPager.totalPage = data.data.total_page;
+                            vm.commentList = data.data.results;
+                            avalon.vmodels.commentPager.totalPage = data.data.total_page;
                         }
                         else {
                             bsAlert(data.data);
@@ -105,29 +100,28 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
             }
 
             //新建公告表单验证与数据提交
-             $("#announcement-form").validator().on('submit', function (e) {
+             $("#comment-form").validator().on('submit', function (e) {
                 if (!e.isDefaultPrevented()) {
-                    var title = $("#title").val();
-                    var content = avalon.vmodels.createAnnouncementEditor.content;
+                    var content = avalon.vmodels.createCommentEditor.content;
+                    var announcementId = location.pathname.split("/")[2];
                     if (content == "") {
-                        bsAlert("请填写公告内容");
+                        bsAlert("请填写内容");
                         return false;
                     }
                     $.ajax({
                         beforeSend: csrfTokenHeader,
-                        url: "/api/admin/announcement/",
+                        url: "/api/comment/",
                         contentType: "application/json",
                         data: JSON.stringify({
-                            title: title,
-                            content: content
+                            content: content,
+                            announcement_id:announcementId
                         }),
                         dataType: "json",
                         method: "post",
                         success: function (data) {
                             if (!data.code) {
                                 bsAlert("提交成功！");
-                                $("#title").val("");
-                                avalon.vmodels.createAnnouncementEditor.content = "";
+                                avalon.vmodels.createCommentEditor.content = "";
                                 getPage(1);
                             } else {
                                 bsAlert(data.data);

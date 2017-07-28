@@ -47,6 +47,15 @@ def get_submission_class(rank, problem):
         return _class
 
 
+def get_submission_score(rank, problem):
+    submission_info = json.loads(rank["submission_info"])
+    if str(problem.id) not in submission_info:
+        return "0"
+    else:
+        submission = submission_info[str(problem.id)]
+        return str(submission["score"])
+
+
 def get_submission_content(rank, problem):
     submission_info = json.loads(rank["submission_info"])
     if str(problem.id) not in submission_info:
@@ -70,4 +79,5 @@ register.filter("contest_status_color", get_contest_status_color)
 register.filter("format_seconds", get_the_formatted_time)
 register.simple_tag(get_submission_class, name="get_submission_class")
 register.simple_tag(get_submission_content, name="get_submission_content")
+register.simple_tag(get_submission_score,name="get_submission_score")
 
