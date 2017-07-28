@@ -4,6 +4,7 @@ from django.db import models
 from account.models import User
 from group.models import Group
 from utils.models import RichTextField
+from datetime import datetime
 
 
 class Announcement(models.Model):
@@ -22,9 +23,15 @@ class Announcement(models.Model):
 
     problem_id = models.IntegerField(null=True)
 
-    last_updated_by = models.ForeignKey(User)
+    last_updated_by = models.IntegerField(null=True)
 
     comment_number = models.IntegerField(default=0)
 
     class Meta:
         db_table = "announcement"
+
+    def add_comment(self, user):
+        self.comment_number += 1
+        self.last_updated_by = user.id
+        self.last_update_time = datetime.now()
+        self.save(update_fields=["comment_number", "last_updated_by", "last_update_time"])

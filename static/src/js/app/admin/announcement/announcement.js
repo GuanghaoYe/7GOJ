@@ -53,6 +53,7 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                         }
 
                         $.ajax({
+                            beforeSend: csrfTokenHeader,
                             url: "/api/admin/announcement/",
                             contentType: "application/json;charset=UTF-8",
                             dataType: "json",
@@ -113,6 +114,7 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                         return false;
                     }
                     $.ajax({
+                        beforeSend: csrfTokenHeader,
                         url: "/api/admin/announcement/",
                         contentType: "application/json",
                         data: JSON.stringify({

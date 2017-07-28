@@ -89,12 +89,13 @@ def announcement_list_page(request, page=1):
     前台的announcemnt列表
     """
     # 正常情况
-    announcements = Announcement.objects.filter(visible=True)
+    announcements = Announcement.objects.filter(visible=True).order_by("-last_update_time")
 
     # 搜索的情况
     keyword = request.GET.get("keyword", "").strip()
     if keyword:
-        announcements = Announcement.filter(Q(title__contains=keyword) | Q(content__contains=keyword))
+        announcements = Announcement.filter(Q(title__contains=keyword) | Q(content__contains=keyword)).order_by(
+            "-last_update_time")
     paginator = Paginator(announcements, 40)
     try:
         current_page = paginator.page(int(page))
