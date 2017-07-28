@@ -9,7 +9,7 @@ from account.views import (UserLoginAPIView, UsernameCheckAPIView, UserRegisterA
                            ApplyResetPasswordAPIView, SSOAPIView, UserProfileAPIView,
                            TwoFactorAuthAPIView, AvatarUploadAPIView)
 
-from announcement.views import AnnouncementAdminAPIView
+from announcement.views import AnnouncementAdminAPIView, announcement_list_page
 
 from contest.views import (ContestAdminAPIView, ContestProblemAdminAPIView,
                            ContestPasswordVerifyAPIView, ContestTimeAPIView,
@@ -20,7 +20,8 @@ from group.views import (GroupAdminAPIView, GroupMemberAdminAPIView,
 
 from admin.views import AdminTemplateView
 from comment.views import CommentAdminAPIView
-from problem.views import TestCaseUploadAPIView, TestCaseDownloadAPIView, ProblemTagAdminAPIView, ProblemAdminAPIView, OpenAPIProblemAPI
+from problem.views import TestCaseUploadAPIView, TestCaseDownloadAPIView, ProblemTagAdminAPIView, ProblemAdminAPIView, \
+    OpenAPIProblemAPI
 from submission.views import (SubmissionAPIView, SubmissionAdminAPIView, ContestSubmissionAPIView,
                               SubmissionShareAPIView, SubmissionRejudgeAdminAPIView, OpenAPISubmitCodeAPI)
 from judge_dispatcher.views import AdminJudgeServerAPIView
@@ -43,7 +44,8 @@ urlpatterns = [
         name="user_change_password_page"),
     url(r'^announcement/(?P<announcement_id>\d+)/$', "announcement.views.announcement_page",
         name="announcement_page"),
-
+    url(r'announcement/$', "announcement.views.announcement_list_page", name="announcement_list_page"),
+    url(r'announcement/(?P<page>\d+)/$', "announcement.views.announcement_list_page", name="announcement_list_page"),
     url(r'^api/user/$', UserInfoAPIView.as_view(), name="user_info_api"),
     url(r'^api/login/$', UserLoginAPIView.as_view(), name="user_login_api"),
     url(r'^api/register/$', UserRegisterAPIView.as_view(), name="user_register_api"),
@@ -136,10 +138,12 @@ urlpatterns = [
         name="avatar_settings_page"),
     url(r'^account/sso/$', SSOAPIView.as_view(), name="sso_api"),
     url(r'^api/account/userprofile/$', UserProfileAPIView.as_view(), name="userprofile_api"),
-    url(r'^reset_password/$', TemplateView.as_view(template_name="oj/account/apply_reset_password.html"), name="apply_reset_password_page"),
+    url(r'^reset_password/$', TemplateView.as_view(template_name="oj/account/apply_reset_password.html"),
+        name="apply_reset_password_page"),
     url(r'^reset_password/t/(?P<token>\w+)/$', "account.views.reset_password_page", name="reset_password_page"),
     url(r'^api/two_factor_auth/$', TwoFactorAuthAPIView.as_view(), name="two_factor_auth_api"),
-    url(r'^two_factor_auth/$', TemplateView.as_view(template_name="oj/account/two_factor_auth.html"), name="two_factor_auth_page"),
+    url(r'^two_factor_auth/$', TemplateView.as_view(template_name="oj/account/two_factor_auth.html"),
+        name="two_factor_auth_page"),
     url(r'^rank/(?P<page>\d+)/$', "account.views.user_rank_page", name="user_rank_page"),
     url(r'^rank/$', "account.views.user_rank_page", name="user_rank_page"),
     url(r'^api/avatar/upload/', AvatarUploadAPIView.as_view(), name="avatar_upload_api"),

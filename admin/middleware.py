@@ -13,7 +13,7 @@ def is_admin_request(path):
 class AdminRequiredMiddleware(object):
     def process_request(self, request):
         path = request.path_info
-        if path.startswith("/admin/") or path.startswith("/api/admin/"):
+        if is_admin_request(path):
             if not(request.user.is_authenticated() and request.user.admin_type):
                 if request.is_ajax():
                     return HttpResponse(json.dumps({"code": 1, "data": u"请先登录"}),

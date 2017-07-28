@@ -22,6 +22,7 @@ class CommentAdminAPIView(APIView):
             data = serializer.data
             Comment.objects.create(announcement_id=data["announcement_id"], content=data["content"],
                                    created_by=request.user)
+
             return success_response(u"评论发布成功！")
         else:
             return serializer_invalid_response(serializer)
