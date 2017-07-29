@@ -9,7 +9,7 @@ from account.views import (UserLoginAPIView, UsernameCheckAPIView, UserRegisterA
                            ApplyResetPasswordAPIView, SSOAPIView, UserProfileAPIView,
                            TwoFactorAuthAPIView, AvatarUploadAPIView)
 
-from announcement.views import AnnouncementAdminAPIView, announcement_list_page
+from announcement.views import AnnouncementAdminAPIView, announcement_list_page, problem_announcement_list_page
 
 from contest.views import (ContestAdminAPIView, ContestProblemAdminAPIView,
                            ContestPasswordVerifyAPIView, ContestTimeAPIView,
@@ -103,6 +103,9 @@ urlpatterns = [
     url(r'^problems/(?P<page>\d+)/$', "problem.views.problem_list_page", name="problem_list_page"),
     url(r'^problem/(?P<problem_id>\d+)/submissions/$', "submission.views.problem_my_submissions_list_page",
         name="problem_my_submissions_page"),
+    url(r'^problem/(?P<problem_id>\d+)/announcements/$', "announcement.views.problem_announcement_list_page",
+        name="problem_announcement_list_page"),
+
 
     url(r'^api/open/submission/$', OpenAPISubmitCodeAPI.as_view(), name="openapi_submit_code"),
 

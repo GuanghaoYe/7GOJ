@@ -109,6 +109,14 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                 if (!e.isDefaultPrevented()) {
                     var title = $("#title").val();
                     var content = avalon.vmodels.createAnnouncementEditor.content;
+                    var problem_id = 0;
+                    var priority = 0;
+                    if(location.href.indexOf("admin") > -1) {
+                        priority = 1;
+                    }
+                    if (location.href.indexOf("problem") > -1) {
+                        problem_id =  window.location.pathname.split("/")[2];
+                    }
                     if (content == "") {
                         bsAlert("请填写公告内容");
                         return false;
@@ -119,7 +127,9 @@ require(["jquery", "avalon", "csrfToken", "bsAlert", "validator", "pager", "edit
                         contentType: "application/json",
                         data: JSON.stringify({
                             title: title,
-                            content: content
+                            content: content,
+                            problem_id: problem_id,
+                            priority: priority
                         }),
                         dataType: "json",
                         method: "post",

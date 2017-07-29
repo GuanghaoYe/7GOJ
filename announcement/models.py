@@ -21,11 +21,13 @@ class Announcement(models.Model):
     # 是否可见 false的话相当于删除
     visible = models.BooleanField(default=True)
 
-    problem_id = models.IntegerField(null=True)
+    problem_id = models.IntegerField(default=0)
 
     last_updated_by = models.IntegerField(null=True)
 
     comment_number = models.IntegerField(default=0)
+
+    priority = models.IntegerField(default=0)
 
     class Meta:
         db_table = "announcement"

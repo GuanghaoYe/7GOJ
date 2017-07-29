@@ -1,0 +1,105 @@
+{% extends 'oj_base.html' %}
+{% block css_block %}
+    <link href="/static/css/simditor/simditor.css" rel="stylesheet">
+{% endblock %}
+{% block title %}
+    我的提交列表
+{% endblock %}
+
+{% block body %}
+
+    {% load submission %}
+    <div class="container main">
+        <ul class="nav nav-tabs nav-tabs-google">
+            {% if problem.contest_id %}
+                <li role="presentation">
+                    <a href="/contest/{{ problem.contest.id }}/problem/{{ problem.id }}/">题目</a></li>
+                <li role="presentation" class="active">
+                    <a href="/contest/{{ problem.contest.id }}/problem/{{ problem.id }}/submissions/">我的提交</a>
+                </li>
+            {% else %}
+                <li role="presentation">
+                    <a href="/problem/{{ problem.id }}/">题目</a></li>
+                <li role="presentation">
+                    <a href="/problem/{{ problem.id }}/submissions/">我的提交</a>
+                </li>
+                <li role="presentation" class="active">
+                    <a href="/problem/{{ problem.id }}/announcements/">讨论区</a>
+                </li>
+            {% endif %}
+        </ul>
+    <div class="col-md-9 col-lg-9">
+        {% if announcements %}
+            <div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th >主题</th>
+                        <th width="10%">发言人</th>
+                        <th width="10%">最后更新时间</th>
+                        <th width="5%">评论数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if announcements %}
+                        {% for item in announcements %}
+                            <tr>
+                                <th scope="row">{{ item.id }}</th>
+                                <td><a href="/announcement/{{ item.id }}/">{{ item.title }}</a></td>
+                                <td>{{ item.created_by }}</td>
+                                <td>{{ item.last_update_time }}</td>
+                                <td>{{ item.comment_number }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pager">
+                        {% if previous_page %}
+                            <li class="previous"><a
+                                    href="/announcement/{{ previous_page }}/{% if keyword %}?keyword={{ keyword }}{% endif %}">
+                                <span aria-hidden="true">&larr;</span> 上一页</a></li>
+                        {% endif %}
+                        {% if next_page %}
+                            <li class="next"><a
+                                    href="/announcement/{{ next_page }}/{% if keyword %}?keyword={{ keyword }}{% endif %}">下一页
+                                <span
+                                        aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% else %}
+            <p>还没有人发言!</p>
+        {% endif %}
+        <form id="announcement-form">
+            <div class="form-group">
+                <label>标题</label>
+                <input name="title" type="text" class="form-control" id="title" placeholder="公告标题"
+                       data-error="请填写公告标题(标题不得超过50字)" maxlength="50" required>
+
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group">
+                <label>内容</label>
+                <ms:editor $id="createAnnouncementEditor" config="createAnnouncementEditor"></ms:editor>
+                <div class="help-block with-errors"></div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">发布公告</button>
+            </div>
+        </form>
+    </div>
+        <div class="col-md-3 col-lg-3">
+        {% include "oj/announcement/_announcement_panel.html" %}
+    </div>
+    </div>
+    </div>
+{% endblock %}
+{% block js_block %}
+    <script src="/static/js/app/admin/announcement/announcement.js"></script>
+    {% include "oj/problem/_mathjax_js.html" %}
+{% endblock %}

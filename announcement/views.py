@@ -5,6 +5,7 @@ from django.shortcuts import render
 from utils.shortcuts import serializer_invalid_response, error_response, success_response
 from comment.models import Comment
 from utils.shortcuts import paginate, error_page
+from problem.models import Problem
 from account.models import SUPER_ADMIN, ADMIN
 from account.decorators import super_admin_required, login_required
 from group.models import Group
@@ -40,7 +41,8 @@ class AnnouncementAdminAPIView(APIView):
         serializer = CreateAnnouncementSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.data
-            Announcement.objects.create(title=data["title"], content=data["content"], created_by=request.user)
+            Announcement.objects.create(title=data["title"], content=data["content"], problem_id=data["problem_id"],
+                                        created_by=request.user,priority=data["priority"])
             return success_response(u"公告发布成功！")
         else:
             return serializer_invalid_response(serializer)
@@ -89,7 +91,7 @@ def announcement_list_page(request, page=1):
     前台的announcemnt列表
     """
     # 正常情况
-    announcements = Announcement.objects.filter(visible=True).order_by("-last_update_time")
+    announcements = Announcement.objects.filter(visible=True).order_by("priority", "-last_update_time")
 
     # 搜索的情况
     keyword = request.GET.get("keyword", "").strip()
@@ -116,3 +118,33 @@ def announcement_list_page(request, page=1):
                   {"announcements": current_page, "page": int(page),
                    "previous_page": previous_page, "next_page": next_page,
                    "keyword": keyword})
+
+
+def problem_announcement_list_page(request, problem_id, page=1):
+    try:
+        problem = Problem.objects.get(id=problem_id, visible=True)
+    except Problem.DoesNotExist:
+        return error_page(request, u"问题不存在")
+    problem_id = int(problem_id)
+    announcements = Announcement.objects.filter(problem_id=problem_id, visible=True). \
+        order_by("-last_update_time")
+    print(announcements.count())
+    paginator = Paginator(announcements, 40)
+    try:
+        current_page = paginator.page(int(page))
+    except Exception:
+        return error_page(request, u"不存在的页码")
+
+    previous_page = next_page = None
+    try:
+        previous_page = current_page.previous_page_number()
+    except Exception:
+        pass
+
+    try:
+        next_page = current_page.next_page_number()
+    except Exception:
+        pass
+    return render(request, "oj/announcement/problem_announcement_list.html",
+                  {"announcements": current_page, "page": int(page),
+                   "previous_page": previous_page, "next_page": next_page,"problem":problem})

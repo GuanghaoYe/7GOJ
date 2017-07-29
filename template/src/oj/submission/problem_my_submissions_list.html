@@ -14,10 +14,13 @@
                     <a href="/contest/{{ problem.contest.id }}/problem/{{ problem.id }}/submissions/">我的提交</a>
                 </li>
             {% else %}
-                <li role="presentation">
+                <li role="presentation"  class="active">
                     <a href="/problem/{{ problem.id }}/">题目</a></li>
-                <li role="presentation" class="active">
+                <li role="presentation">
                     <a href="/problem/{{ problem.id }}/submissions/">我的提交</a>
+                </li>
+                <li role="presentation">
+                    <a href="/problem/{{ problem.id }}/announcements/">讨论区</a>
                 </li>
             {% endif %}
         </ul>

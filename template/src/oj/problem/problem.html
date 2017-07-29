@@ -5,12 +5,22 @@
 {% block body %}
     <div class="container main">
         <ul class="nav nav-tabs nav-tabs-google">
-            <li role="presentation" class="active">
-                <a href="/problem/{{ problem.id }}/">题目</a>
-            </li>
-            <li role="presentation">
-                <a href="/problem/{{ problem.id }}/submissions/">我的提交</a>
-            </li>
+            {% if problem.contest_id %}
+                <li role="presentation">
+                    <a href="/contest/{{ problem.contest.id }}/problem/{{ problem.id }}/">题目</a></li>
+                <li role="presentation" class="active">
+                    <a href="/contest/{{ problem.contest.id }}/problem/{{ problem.id }}/submissions/">我的提交</a>
+                </li>
+            {% else %}
+                <li role="presentation"  class="active">
+                    <a href="/problem/{{ problem.id }}/">题目</a></li>
+                <li role="presentation">
+                    <a href="/problem/{{ problem.id }}/submissions/">我的提交</a>
+                </li>
+                <li role="presentation">
+                    <a href="/problem/{{ problem.id }}/announcements/">讨论区</a>
+                </li>
+            {% endif %}
         </ul>
         {% include "oj/problem/_problem_header.html" %}
 

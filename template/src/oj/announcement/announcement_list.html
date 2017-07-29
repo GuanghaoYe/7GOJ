@@ -24,11 +24,12 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>#</th>
+                            <th width="5%">#</th>
+                            <th width="10%">problem</th>
                             <th>主题</th>
-                            <th>发言人</th>
-                            <th>最后更新时间</th>
-                            <th>评论数</th>
+                            <th width="5%">发言人</th>
+                            <th width="20%">最后更新时间</th>
+                            <th width="5%">评论数</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -36,6 +37,11 @@
                             {% for item in announcements %}
                                 <tr>
                                     <th scope="row">{{ item.id }}</th>
+                                    {% ifequal item.problem_id 0 %}
+                                    <td>-</td>
+                                    {% else %}
+                                    <td><a href="/problem/{{ item.problem_id }}/">{{ item.problem_id }}</a></td>
+                                    {% endifequal %}
                                     <td><a href="/announcement/{{ item.id }}/">{{ item.title }}</a></td>
                                     <td>{{ item.created_by }}</td>
                                     <td>{{ item.last_update_time }}</td>
