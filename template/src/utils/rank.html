@@ -26,8 +26,13 @@
                         <td><a href="/user/{{ rank.user.username }}">{{ rank.user.username }}</a></td>
                         <td>{% if rank.mood %}{{ rank.mood }}{% endif %}</td>
                         <td>{{ rank.accepted_problem_number }}</td>
-                        <td>{{ rank.submission_number }}</td>
-                        <td>{% widthratio rank.accepted_problem_number rank.submission_number 100 %}%</td>
+                        {% if rank.accepted_problem_number < 10000 %}
+                            <td>{{ rank.submission_number }}</td>
+                            <td>{% widthratio rank.accepted_problem_number rank.submission_number 100 %}%</td>
+                        {% else %}
+                            <td>0</td>
+                            <td>INF</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
 
